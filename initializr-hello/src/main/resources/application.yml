@@ -1,12 +1,12 @@
 #spring:
 #  profiles:
 #    active: dev
+debug: true
 ---
 spring:
   profiles: dev
 server:
   port: 8081
-
 ---
 spring:
   profiles: prod
