@@ -1,4 +1,4 @@
-package com.xiebo.springboot.initializrhello.config;
+package com.xiebo.springboot.initializrhello.bean;
 
 public class Dog {
     private String name;

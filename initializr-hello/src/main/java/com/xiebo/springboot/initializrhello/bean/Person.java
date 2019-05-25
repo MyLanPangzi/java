@@ -1,6 +1,7 @@
-package com.xiebo.springboot.initializrhello.config;
+package com.xiebo.springboot.initializrhello.bean;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -10,12 +11,13 @@ import java.util.Map;
 
 /**
  * ConfigurationProperties注解表示，读取yml/properties文件中的那个属性，用作填充
- *
- * @Value无法使用复杂类型，无法进行验证，字段名不够灵活，需写多次，可以使用SpEl
- * @ConfigurationProperties声明一次即可绑定，可进行JSR303验证，字段名灵活绑定
+ * <p>
+ * \@Value无法使用复杂类型，无法进行验证，字段名不够灵活，需写多次，可以使用SpEl
+ * \@ConfigurationProperties声明一次即可绑定，可进行JSR303验证，字段名灵活绑定
  */
 @Component
 @Validated
+@PropertySource("classpath:person.properties")
 @ConfigurationProperties(prefix = "person")
 public class Person {
     //    @Value("${person.name}")
