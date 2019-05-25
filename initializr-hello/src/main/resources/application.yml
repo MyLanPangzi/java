@@ -1,0 +1,14 @@
+person:
+  name: hello
+  lastName: world
+  #  last-name: test
+  age: 18
+  teenager: false
+#  is-teenager: true invalid
+#  isTeenager: true invalid
+  birthday: 2000/01/01 #dasd
+  hobbies: [sport,movies]
+  maps: {k: v, gender: m, description: "i am a man \n hhhh"}
+  dog:
+    name: xiaohei
+    age: 1
