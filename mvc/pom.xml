@@ -20,11 +20,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>jquery</artifactId>
-            <version>3.4.1</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
-<!--        C:\Users\Administrator\.m2\repository\org\webjars\jquery\3.4.1\jquery-3.4.1.jar!\META-INF\resources\webjars\jquery\3.4.1\jquery.js-->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
