@@ -68,13 +68,19 @@
                     <tr th:each="emp : ${employees}" th:object="${emp}">
                         <td th:text="*{id}"></td>
                         <td th:text="*{lastName}"></td>
-                        <td th:text="*{gender} == 0 ? 'M' : 'F'"></td>
+                        <td th:text="*{gender == 1}  ? 'M' : 'F'"></td>
                         <td th:text="*{#dates.format(birth, 'yyyy-MM-dd')}"></td>
                         <td th:text="*{department.departmentName}"></td>
                         <td th:text="*{email}"></td>
                         <td>
-                            <button class="btn btn-sm btn-primary">编辑</button>
-                            <button class="btn btn-sm btn-danger">删除</button>
+                            <a
+                                    class="btn btn-sm btn-primary"
+                                    th:href="@{/employee/{id}(id=*{id})}"
+                            >编辑</a>
+                            <a
+                                    class="btn btn-sm btn-danger"
+                                    th:href="@{/employee/{id}(id=*{id})}"
+                            >删除</a>
                         </td>
                     </tr>
                     </tbody>

@@ -6,7 +6,9 @@ import com.xiebo.springboot.mvc.entities.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -27,11 +29,25 @@ public class EmployeeController {
     @GetMapping("/employee")
     public ModelAndView toAdd() {
         return new ModelAndView("employee/add")
+                .addObject("employee", new Employee())
                 .addObject("departments", this.departmentDao.getDepartments());
     }
 
     @PostMapping("/employee")
     public ModelAndView add(Employee employee) {
+        this.employeeDao.save(employee);
+        return new ModelAndView("redirect:/employees");
+    }
+
+    @GetMapping("/employee/{id}")
+    public ModelAndView toEdit(@PathVariable("id") Integer id) {
+        return new ModelAndView("employee/add")
+                .addObject("employee", this.employeeDao.get(id))
+                .addObject("departments", this.departmentDao.getDepartments());
+    }
+
+    @PutMapping("/employee/{id}")
+    public ModelAndView edit(@PathVariable("id") Integer id, Employee employee) {
         this.employeeDao.save(employee);
         return new ModelAndView("redirect:/employees");
     }
