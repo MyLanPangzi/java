@@ -1,11 +1,12 @@
 package com.xiebo.springboot.mvc.model;
 
 public class User {
-    private String name;
+    private String username;
+    private String password;
     private String gender;
 
     public User(String name, String gender) {
-        this.name = name;
+        this.username = name;
         this.gender = gender;
     }
 
@@ -15,17 +16,26 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "name='" + name + '\'' +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
                 ", gender='" + gender + '\'' +
                 '}';
     }
 
-    public String getName() {
-        return name;
+    public String getPassword() {
+        return password;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getGender() {

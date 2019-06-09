@@ -6,11 +6,11 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
 -->
 <configuration scan="false" scanPeriod="60 seconds" debug="false">
     <!-- 定义日志的根目录 -->
-    <property name="LOG_HOME" value="./" />
+    <property username="LOG_HOME" value="./" />
     <!-- 定义日志文件名称 -->
-    <property name="appName" value="spring"></property>
+    <property username="appName" value="spring"></property>
     <!-- ch.qos.logback.core.ConsoleAppender 表示控制台输出 -->
-    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <appender username="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <!--
         日志输出格式：
 			%d表示日期时间，
@@ -26,7 +26,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
     </appender>
 
     <!-- 滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->
-    <appender name="appLogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender username="appLogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 指定日志文件的名称 -->
         <file>${LOG_HOME}/${appName}.log</file>
         <!--
@@ -60,16 +60,16 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
 
     <!--
 		logger主要用于存放日志对象，也可以定义日志类型、级别
-		name：表示匹配的logger类型前缀，也就是包的前半部分
+		username：表示匹配的logger类型前缀，也就是包的前半部分
 		level：要记录的日志级别，包括 TRACE < DEBUG < INFO < WARN < ERROR
 		additivity：作用在于children-logger是否使用 rootLogger配置的appender进行输出，
 		false：表示只用当前logger的appender-ref，true：
 		表示当前logger的appender-ref和rootLogger的appender-ref都有效
     -->
     <!-- hibernate logger -->
-    <logger name="com.xiebo" level="debug" />
+    <logger username="com.xiebo" level="debug" />
     <!-- Spring framework logger -->
-    <logger name="org.springframework" level="debug" additivity="false"></logger>
+    <logger username="org.springframework" level="debug" additivity="false"></logger>
 
 
 

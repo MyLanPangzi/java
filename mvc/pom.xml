@@ -11,7 +11,7 @@
     <groupId>com.xiebo.springboot</groupId>
     <artifactId>mvc</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>mvc</name>
+    <username>mvc</username>
     <description>MVC</description>
 
     <properties>

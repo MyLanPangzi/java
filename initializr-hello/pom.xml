@@ -11,7 +11,7 @@
     <groupId>com.xiebo.springboot</groupId>
     <artifactId>initializr-hello</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>initializr-hello</name>
+    <username>initializr-hello</username>
     <description>Demo project for Spring Boot</description>
 
     <properties>
