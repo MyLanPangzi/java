@@ -1,16 +1,23 @@
 package com.xiebo.springboot.mvc.config;
 
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
 
 @Configuration
@@ -25,7 +32,31 @@ public class AppConfig {
             registry.addViewController("/").setViewName("index");
             registry.addViewController("/index").setViewName("index");
         }
+    }
 
+    @Component("localeResolver")
+    public static class MyLocaleResolver implements LocaleResolver {
+        private static final Logger LOGGER = LoggerFactory.getLogger(MyLocaleResolver.class);
+        private AcceptHeaderLocaleResolver acceptHeaderLocaleResolver = new AcceptHeaderLocaleResolver();
+
+        @Override
+        public Locale resolveLocale(HttpServletRequest request) {
+            String localParameter = request.getParameter("l");
+            LOGGER.info("local parameter:{}", localParameter);
+            if (StringUtils.isEmpty(localParameter)) {
+                return this.acceptHeaderLocaleResolver.resolveLocale(request);
+            }
+            String[] split = localParameter.split("_");
+            if (split.length != 2) {
+                return Locale.getDefault();
+            }
+            return new Locale(split[0], split[1]);
+        }
+
+        @Override
+        public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
+            this.acceptHeaderLocaleResolver.setLocale(request, response, locale);
+        }
     }
 
     @Bean
