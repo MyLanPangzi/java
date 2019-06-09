@@ -79,13 +79,16 @@
                             >编辑</a>
                             <a
                                     class="btn btn-sm btn-danger"
-                                    th:href="@{/employee/{id}(id=*{id})}"
+                                    th:attr="data-id=*{id}"
                             >删除</a>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
+            <form th:action="@{/employee}" id="deleteForm" th:method="post">
+                <input type="hidden" name="_method" value="delete">
+            </form>
         </main>
     </div>
 </div>
@@ -104,38 +107,17 @@
     feather.replace()
 </script>
 
-<!-- Graphs -->
-<script type="text/javascript" src="/asserts/js/Chart.min.js" th:src="@{/asserts/js/Chart.min.js}"></script>
 <script>
-
-    var myChart = new Chart(document.getElementById("myChart"), {
-        type: 'line',
-        data: {
-            labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-            datasets: [{
-                data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
-                lineTension: 0,
-                backgroundColor: 'transparent',
-                borderColor: '#007bff',
-                borderWidth: 4,
-                pointBackgroundColor: '#007bff'
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: false
-                    }
-                }]
-            },
-            legend: {
-                display: false,
-            }
+    document.querySelector('.table-responsive').addEventListener('click', function (e) {
+        let {nodeName, dataset} = e.target;
+        if (!nodeName === 'A') {
+            return;
         }
+        let form = document.getElementById('deleteForm');
+        form.action = `${form.action}/${dataset.id}`;
+        form.submit();
     });
 </script>
-
 </body>
 
 </html>
