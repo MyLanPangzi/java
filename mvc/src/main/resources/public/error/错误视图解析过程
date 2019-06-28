@@ -1,0 +1,8 @@
+1，先转发到BasicErrorController，根据请求头来返回html视图或者ResponseEntity，然后ContentNegotiating视图再解析
+2，BasicErrorController再调用DefaultErrorViewResolver的resolveErrorView方法
+3，resolveErrorView调用resolve根据错误码（400，404，403，500，502，504）解析error/目录下的视图，
+    如果有模板可用，则优先使用模板
+    否则调用resolveResource解析	"classpath:/META-INF/resources/", "classpath:/resources/",
+                         			"classpath:/static/", "classpath:/public/" ;目录下的静态资源视图(.html)
+4，resolve如果没有解析出具体的视图则解析模糊的4xx,5xx视图
+5，如果都没有，则直接返回error视图，也就是StaticView视图

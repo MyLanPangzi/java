@@ -1,13 +1,11 @@
 package com.xiebo.springboot.mvc.config;
 
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.xiebo.springboot.mvc.interceptor.LoginInterceptor;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
@@ -19,6 +17,7 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
+import java.util.Map;
 
 @Configuration
 //@EnableWebMvc
@@ -38,12 +37,21 @@ public class AppConfig {
         public void addInterceptors(InterceptorRegistry registry) {
             registry
                     .addInterceptor(new LoginInterceptor())
-                    .excludePathPatterns("/", "/index", "/login")
+                    .excludePathPatterns("/", "/index", "/login", "/hello", "/error")
                     .addPathPatterns("/*");
         }
 
     }
 
+    @Component
+    private static class CustomDefaultErrorAttributes extends DefaultErrorAttributes {
+        @Override
+        public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+            Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, includeStackTrace);
+            errorAttributes.put("Hello", "world");
+            return errorAttributes;
+        }
+    }
 
     @Component("localeResolver")
     public static class MyLocaleResolver implements LocaleResolver {
@@ -68,11 +76,12 @@ public class AppConfig {
         }
     }
 
-    @Bean
-    public HttpMessageConverters httpMessageConverters() {
-        HttpMessageConverter<?> httpMessageConverter = new FastJsonHttpMessageConverter();
-        return new HttpMessageConverters(httpMessageConverter);
-    }
+//    @Bean
+//    public HttpMessageConverters httpMessageConverters() {
+//        HttpMessageConverter<?> httpMessageConverter = new FastJsonHttpMessageConverter();
+//
+//        return new HttpMessageConverters(httpMessageConverter);
+//    }
 
     @Component
     private static class MyViewResolver implements ViewResolver {

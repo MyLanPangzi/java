@@ -17,14 +17,15 @@ public class IndexController {
 
     @GetMapping("/hello")
     public ModelAndView hello() {
-
-        return new ModelAndView("/hello")
-                .addObject("hello", "world");
+        throw new RuntimeException("Error");
+        //        throw new UserNotFindException("用户未找到");
+//        return new ModelAndView("/hello")
+//                .addObject("hello", "world");
     }
 
     @PostMapping("/login")
     public ModelAndView login(User user, HttpSession session) {
-        if (StringUtils.isEmpty(user.getUsername()) ||  !"123456".equals(user.getPassword())) {
+        if (StringUtils.isEmpty(user.getUsername()) || !"123456".equals(user.getPassword())) {
             return new ModelAndView("index")
                     .addObject("msg", "用户名或密码错误！");
         }
