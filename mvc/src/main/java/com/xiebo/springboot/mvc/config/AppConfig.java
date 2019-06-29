@@ -1,8 +1,23 @@
 package com.xiebo.springboot.mvc.config;
 
-import com.xiebo.springboot.mvc.interceptor.LoginInterceptor;
+import com.xiebo.springboot.mvc.MvcApplication;
+import com.xiebo.springboot.mvc.filter.HelloFilter;
+import com.xiebo.springboot.mvc.listener.MyServletListener;
+import com.xiebo.springboot.mvc.listener.MySessionListener;
+import com.xiebo.springboot.mvc.servlet.HelloServlet;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.Session;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.WebRequest;
@@ -16,12 +31,57 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.Duration;
 import java.util.Locale;
 import java.util.Map;
 
 @Configuration
 //@EnableWebMvc
+@ServletComponentScan(basePackageClasses = MvcApplication.class)
 public class AppConfig {
+
+    @Bean
+    public ServletRegistrationBean servletRegistrationBean() {
+        return new ServletRegistrationBean(new HelloServlet(), "/servlet/hello");
+    }
+
+    @Bean
+    public FilterRegistrationBean filterRegistrationBean(ServletRegistrationBean servletRegistrationBean) {
+        return new FilterRegistrationBean(new HelloFilter(), servletRegistrationBean);
+    }
+
+    @Bean
+    public ServletListenerRegistrationBean servletListenerRegistrationBean() {
+        return new ServletListenerRegistrationBean(new MyServletListener());
+    }
+
+    @Bean
+    public ServletListenerRegistrationBean sessionListener() {
+        return new ServletListenerRegistrationBean(new MySessionListener());
+    }
+
+
+    @Component
+    public static class CustomizationBean implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
+
+        @Override
+        public void customize(ConfigurableServletWebServerFactory server) {
+            server.setPort(8080);
+            Session session = new Session();
+            session.setTimeout(Duration.ofSeconds(3600));
+            server.setDisplayName("Hiscat");
+            server.setSession(session);
+        }
+
+    }
+
+    @Bean
+    public ConfigurableServletWebServerFactory webServerFactory() {
+        TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+        factory.setPort(8080);
+        factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
+        return factory;
+    }
 
     @Component
     public static class MyWebMvcConfigure implements WebMvcConfigurer {
@@ -35,10 +95,10 @@ public class AppConfig {
 
         @Override
         public void addInterceptors(InterceptorRegistry registry) {
-            registry
-                    .addInterceptor(new LoginInterceptor())
-                    .excludePathPatterns("/", "/index", "/login", "/hello", "/error")
-                    .addPathPatterns("/*");
+//            registry
+//                    .addInterceptor(new LoginInterceptor())
+//                    .excludePathPatterns("/", "/index", "/login", "/hello", "/error")
+//                    .addPathPatterns("/*");
         }
 
     }
