@@ -41,23 +41,23 @@ import java.util.Map;
 public class AppConfig {
 
     @Bean
-    public ServletRegistrationBean servletRegistrationBean() {
-        return new ServletRegistrationBean(new HelloServlet(), "/servlet/hello");
+    public ServletRegistrationBean<HelloServlet> servletRegistrationBean() {
+        return new ServletRegistrationBean<>(new HelloServlet(), "/servlet/hello");
     }
 
     @Bean
-    public FilterRegistrationBean filterRegistrationBean(ServletRegistrationBean servletRegistrationBean) {
-        return new FilterRegistrationBean(new HelloFilter(), servletRegistrationBean);
+    public FilterRegistrationBean<HelloFilter> filterRegistrationBean(ServletRegistrationBean servletRegistrationBean) {
+        return new FilterRegistrationBean<>(new HelloFilter(), servletRegistrationBean);
     }
 
     @Bean
-    public ServletListenerRegistrationBean servletListenerRegistrationBean() {
-        return new ServletListenerRegistrationBean(new MyServletListener());
+    public ServletListenerRegistrationBean<MyServletListener> servletListenerRegistrationBean() {
+        return new ServletListenerRegistrationBean<>(new MyServletListener());
     }
 
     @Bean
-    public ServletListenerRegistrationBean sessionListener() {
-        return new ServletListenerRegistrationBean(new MySessionListener());
+    public ServletListenerRegistrationBean<MySessionListener> sessionListener() {
+        return new ServletListenerRegistrationBean<>(new MySessionListener());
     }
 
 
@@ -147,7 +147,7 @@ public class AppConfig {
     private static class MyViewResolver implements ViewResolver {
 
         @Override
-        public View resolveViewName(String viewName, Locale locale) throws Exception {
+        public View resolveViewName(String viewName, Locale locale)  {
             return null;
         }
     }
