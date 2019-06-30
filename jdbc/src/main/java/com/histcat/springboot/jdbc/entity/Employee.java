@@ -1,23 +1,20 @@
-package com.xiebo.springboot.mvc.entities;
+package com.histcat.springboot.jdbc.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Employee {
 
     private Integer id;
     private String lastName;
-    private String email;
-    //1 male, 0 female
     private Integer gender;
-    private Department department;
-    private Date birth;
+    private String email;
+    private Integer dId;
 
 }
