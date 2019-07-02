@@ -1,0 +1,146 @@
+this.resourceLoader = resourceLoader;
+Assert.notNull(primarySources, "PrimarySources must not be null");
+this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+this.webApplicationType = WebApplicationType.deduceFromClasspath();
+
+	static WebApplicationType deduceFromClasspath() {
+		if (ClassUtils.isPresent(WEBFLUX_INDICATOR_CLASS, null)
+				&& !ClassUtils.isPresent(WEBMVC_INDICATOR_CLASS, null)
+				&& !ClassUtils.isPresent(JERSEY_INDICATOR_CLASS, null)) {
+			return WebApplicationType.REACTIVE;
+		}
+		for (String className : SERVLET_INDICATOR_CLASSES) {
+			if (!ClassUtils.isPresent(className, null)) {
+				return WebApplicationType.NONE;
+			}
+		}
+		return WebApplicationType.SERVLET;
+	}
+
+//一个基础的SpringBoot程序大概会有5-6个左右的初始器
+setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+//一个基础的SpringBoot程序大概会有10-12左右的监听器
+setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+
+	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
+		return getSpringFactoriesInstances(type, new Class<?>[] {});
+	}
+
+	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes, Object... args) {
+		ClassLoader classLoader = getClassLoader();
+
+			@Nullable
+        	public static ClassLoader getDefaultClassLoader() {
+        		ClassLoader cl = null;
+        		try {
+        			cl = Thread.currentThread().getContextClassLoader();
+        		}
+        		catch (Throwable ex) {
+        			// Cannot access thread context ClassLoader - falling back...
+        		}
+        		if (cl == null) {
+        			// No thread context class loader -> use class loader of this class.
+        			cl = ClassUtils.class.getClassLoader();
+        			if (cl == null) {
+        				// getClassLoader() returning null indicates the bootstrap ClassLoader
+        				try {
+        					cl = ClassLoader.getSystemClassLoader();
+        				}
+        				catch (Throwable ex) {
+        					// Cannot access system ClassLoader - oh well, maybe the caller can live with null...
+        				}
+        			}
+        		}
+        		return cl;
+        	}
+		// Use names and ensure unique to protect against duplicates
+		//加载所有classpath下面META-INF目录下的spring.factories
+		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+		    public static List<String> loadFactoryNames(Class<?> factoryClass, @Nullable ClassLoader classLoader) {
+            		String factoryClassName = factoryClass.getName();//ApplicationContextInitializer
+            		return loadSpringFactories(classLoader).getOrDefault(factoryClassName, Collections.emptyList());
+            	}
+
+            private static Map<String, List<String>> loadSpringFactories(@Nullable ClassLoader classLoader) {
+                MultiValueMap<String, String> result = cache.get(classLoader);
+                if (result != null) {
+                    return result;
+                }
+
+                try {
+                //以接口名为key，value是逗号分隔的实现类，转换成数组，然后缓存下来
+                    Enumeration<URL> urls = (classLoader != null ?
+                            classLoader.getResources(FACTORIES_RESOURCE_LOCATION) ://META-INF/spring.factories
+                            ClassLoader.getSystemResources(FACTORIES_RESOURCE_LOCATION));//META-INF/spring.factories
+                    result = new LinkedMultiValueMap<>();
+                    while (urls.hasMoreElements()) {
+                        URL url = urls.nextElement();
+                        UrlResource resource = new UrlResource(url);
+                        Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+                        for (Map.Entry<?, ?> entry : properties.entrySet()) {
+                            String factoryClassName = ((String) entry.getKey()).trim();
+                            for (String factoryName : StringUtils.commaDelimitedListToStringArray((String) entry.getValue())) {
+                                result.add(factoryClassName, factoryName.trim());
+                            }
+                        }
+                    }
+                    cache.put(classLoader, result);
+                    return result;
+                }
+                catch (IOException ex) {
+                    throw new IllegalArgumentException("Unable to load factories from location [" +
+                            FACTORIES_RESOURCE_LOCATION + "]", ex);
+                }
+            }
+		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
+            @SuppressWarnings("unchecked")
+            private <T> List<T> createSpringFactoriesInstances(Class<T> type,
+                    Class<?>[] parameterTypes, ClassLoader classLoader, Object[] args,
+                    Set<String> names) {
+                List<T> instances = new ArrayList<>(names.size());
+                for (String name : names) {
+                    try {
+                        Class<?> instanceClass = ClassUtils.forName(name, classLoader);
+                        Assert.isAssignable(type, instanceClass);
+                        Constructor<?> constructor = instanceClass
+                                .getDeclaredConstructor(parameterTypes);
+                        T instance = (T) BeanUtils.instantiateClass(constructor, args);
+                        instances.add(instance);
+                    }
+                    catch (Throwable ex) {
+                        throw new IllegalArgumentException(
+                                "Cannot instantiate " + type + " : " + name, ex);
+                    }
+                }
+                return instances;
+            }
+
+		AnnotationAwareOrderComparator.sort(instances);
+		return instances;
+	}
+
+this.mainApplicationClass = deduceMainApplicationClass();
+
+
+	private Class<?> deduceMainApplicationClass() {
+		try {
+			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
+			for (StackTraceElement stackTraceElement : stackTrace) {
+				if ("main".equals(stackTraceElement.getMethodName())) {
+					return Class.forName(stackTraceElement.getClassName());
+				}
+			}
+		}
+		catch (ClassNotFoundException ex) {
+			// Swallow and continue
+		}
+		return null;
+	}
+
+ApplicationContextInitializer
+ApplicationListener
+
+
+org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration,
+org.springframework.boot.devtools.autoconfigure.LocalDevToolsAutoConfiguration,
+org.springframework.boot.devtools.autoconfigure.RemoteDevToolsAutoConfiguration

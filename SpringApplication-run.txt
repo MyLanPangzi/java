@@ -1,0 +1,192 @@
+StopWatch stopWatch = new StopWatch();//秒表
+stopWatch.start();
+ConfigurableApplicationContext context = null;
+Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
+configureHeadlessProperty();
+
+//获取所有的SpringApplicationRunListeners，也是从META-INF/spring.factories下读取，要求所有的实现类都有一个，下面类型的构造函数
+// { SpringApplication.class, String[].class };，(SpringApplication app, String[] args)
+//SpringApplicationRunListeners有一大堆回调方法
+//源码中貌似只注册了一个EventPublishingRunListener
+//然后用SimpleApplicationEventMulticaster广播初始化保存起来的的ApplicationListener
+//SpringApplicationRunListeners --> each SpringApplicationRunListener
+// --> EventPublishingRunListener --> SimpleApplicationEventMulticaster
+// --> SpringApplication.listeners --> ApplicationListener
+
+SpringApplicationRunListeners listeners = getRunListeners(args);
+    	private SpringApplicationRunListeners getRunListeners(String[] args) {
+    		Class<?>[] types = new Class<?>[] { SpringApplication.class, String[].class };
+    		return new SpringApplicationRunListeners(logger, getSpringFactoriesInstances(
+    				SpringApplicationRunListener.class, types, this, args));
+    	}
+
+listeners.starting();//触发第一个事件，监听器启动
+try {
+    ApplicationArguments applicationArguments = new DefaultApplicationArguments(
+            args);
+    ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);//预备环境
+        	private ConfigurableEnvironment prepareEnvironment(
+        			SpringApplicationRunListeners listeners,
+        			ApplicationArguments applicationArguments) {
+        		// Create and configure the environment
+        		ConfigurableEnvironment environment = getOrCreateEnvironment();//根据环境创建Environment
+        		configureEnvironment(environment, applicationArguments.getSourceArgs());//把命令行参数放入Environment
+        		listeners.environmentPrepared(environment);//触发监听器，环境预备事件
+        		bindToSpringApplication(environment);//把Environment绑定到SpringApplication
+        		if (!this.isCustomEnvironment) {//这里没啥动作，只有环境不一致时才会转换为标准Environment
+        			environment = new EnvironmentConverter(getClassLoader())
+        					.convertEnvironmentIfNecessary(environment, deduceEnvironmentClass());
+        		}
+        		ConfigurationPropertySources.attach(environment);//这里没看懂，附加了一大堆PropertySources
+        		return environment;
+        	}
+    configureIgnoreBeanInfo(environment);//忽略bean信息
+    Banner printedBanner = printBanner(environment);
+    context = createApplicationContext();//根据环境创建IOC容器
+    exceptionReporters = getSpringFactoriesInstances(
+            SpringBootExceptionReporter.class,
+            new Class[] { ConfigurableApplicationContext.class }, context);
+    prepareContext(context, environment, listeners, applicationArguments, printedBanner);//预备IOC容器环境
+        private void prepareContext(ConfigurableApplicationContext context,
+                ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
+                ApplicationArguments applicationArguments, Banner printedBanner) {
+            context.setEnvironment(environment);
+            postProcessApplicationContext(context);//没啥操作，放置一个转换服务
+                context.getBeanFactory().setConversionService(ApplicationConversionService.getSharedInstance());
+            applyInitializers(context);//触发从META-INF/spfing.factories读取的初始化器
+
+            listeners.contextPrepared(context);//触发第三个事件，IOC预备完成
+            if (this.logStartupInfo) {
+                logStartupInfo(context.getParent() == null);
+                logStartupProfileInfo(context);
+            }
+            // Add boot specific singleton beans
+            ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+            beanFactory.registerSingleton("springApplicationArguments", applicationArguments);
+            if (printedBanner != null) {
+                beanFactory.registerSingleton("springBootBanner", printedBanner);
+            }
+            if (beanFactory instanceof DefaultListableBeanFactory) {
+                ((DefaultListableBeanFactory) beanFactory)
+                        .setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+            }
+            // Load the sources
+            Set<Object> sources = getAllSources();
+            Assert.notEmpty(sources, "Sources must not be empty");
+            load(context, sources.toArray(new Object[0]));//把SpringApplication放入IOC容器
+                	protected void load(ApplicationContext context, Object[] sources) {
+                		BeanDefinitionLoader loader = createBeanDefinitionLoader(
+                				getBeanDefinitionRegistry(context), sources);
+
+                		if (this.environment != null) {
+                			loader.setEnvironment(this.environment);
+                		}
+                		loader.load();
+                		    	public static void registerBeanDefinition(
+                            			BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)//registry就是IOC容器
+                            			throws BeanDefinitionStoreException {
+
+                            		// Register bean definition under primary name.
+                            		String beanName = definitionHolder.getBeanName();
+                            		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
+
+                            		// Register aliases for bean name, if any.
+                            		String[] aliases = definitionHolder.getAliases();
+                            		if (aliases != null) {
+                            			for (String alias : aliases) {
+                            				registry.registerAlias(beanName, alias);
+                            			}
+                            		}
+                            	}
+                	}
+
+            listeners.contextLoaded(context);//触发第四个事件，IOC容器加载完毕
+        }
+    refreshContext(context);//刷新环境
+        @Override
+        	public void refresh() throws BeansException, IllegalStateException {
+        		synchronized (this.startupShutdownMonitor) {
+        			// Prepare this context for refreshing.
+        			prepareRefresh();
+
+        			// Tell the subclass to refresh the internal bean factory.
+        			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+
+        			// Prepare the bean factory for use in this context.
+        			prepareBeanFactory(beanFactory);
+
+        			try {
+        				// Allows post-processing of the bean factory in context subclasses.
+        				postProcessBeanFactory(beanFactory);
+
+        				// Invoke factory processors registered as beans in the context.
+        				invokeBeanFactoryPostProcessors(beanFactory);
+
+        				// Register bean processors that intercept bean creation.
+        				registerBeanPostProcessors(beanFactory);
+
+        				// Initialize message source for this context.
+        				initMessageSource();
+
+        				// Initialize event multicaster for this context.
+        				initApplicationEventMulticaster();
+
+        				// Initialize other special beans in specific context subclasses.
+        				onRefresh();
+
+        				// Check for listener beans and register them.
+        				registerListeners();
+
+        				// Instantiate all remaining (non-lazy-init) singletons.
+        				finishBeanFactoryInitialization(beanFactory);
+
+        				// Last step: publish corresponding event.
+        				finishRefresh();
+        			}
+
+        			catch (BeansException ex) {
+        				if (logger.isWarnEnabled()) {
+        					logger.warn("Exception encountered during context initialization - " +
+        							"cancelling refresh attempt: " + ex);
+        				}
+
+        				// Destroy already created singletons to avoid dangling resources.
+        				destroyBeans();
+
+        				// Reset 'active' flag.
+        				cancelRefresh(ex);
+
+        				// Propagate exception to caller.
+        				throw ex;
+        			}
+
+        			finally {
+        				// Reset common introspection caches in Spring's core, since we
+        				// might not ever need metadata for singleton beans anymore...
+        				resetCommonCaches();
+        			}
+        		}
+        	}
+
+    afterRefresh(context, applicationArguments);
+    stopWatch.stop();
+    if (this.logStartupInfo) {
+        new StartupInfoLogger(this.mainApplicationClass)
+                .logStarted(getApplicationLog(), stopWatch);
+    }
+    listeners.started(context);//
+    callRunners(context, applicationArguments);
+}
+catch (Throwable ex) {
+    handleRunFailure(context, ex, exceptionReporters, listeners);
+    throw new IllegalStateException(ex);
+}
+
+try {
+    listeners.running(context);
+}
+catch (Throwable ex) {
+    handleRunFailure(context, ex, exceptionReporters, null);
+    throw new IllegalStateException(ex);
+}
+return context;

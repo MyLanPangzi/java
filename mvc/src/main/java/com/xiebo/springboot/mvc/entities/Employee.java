@@ -1,7 +1,6 @@
 package com.xiebo.springboot.mvc.entities;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,4 +19,8 @@ public class Employee {
     private Department department;
     private Date birth;
 
+    public Employee(int i, String s, String s1, int i1, Department department) {
+
+
+    }
 }

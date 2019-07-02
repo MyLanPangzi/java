@@ -1,0 +1,12 @@
+DefaultSingletonBeanRegistry
+    singletonObjects
+    singletonFactories
+
+AbstractBeanFactory
+    beanPostProcessors
+    conversionService
+
+DefaultListableBeanFactory
+    resolvableDependencies
+    beanDefinitionMap
+    beanDefinitionNames
