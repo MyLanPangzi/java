@@ -1,19 +1,30 @@
 package com.histcat;
 
-public class FizzBuzz {
-    public static String of(Integer num) {
-        if (num == null) {
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+class FizzBuzz {
+    static String valueOf(Integer input) {
+        if (input == null) {
             return "null";
         }
-        if (num % 15 == 0) {
+        if (input % 15 == 0) {
             return "FizzBuzz";
         }
-        if (num % 3 == 0 || num.toString().contains("3")) {
+        if (input % 3 == 0) {
             return "Fizz";
         }
-        if (num % 5 == 0 || num.toString().contains("5")) {
+        if (input % 5 == 0) {
             return "Buzz";
         }
-        return num.toString();
+        return input.toString();
+    }
+
+    static Stream<String> stream(Integer input) {
+        if (input == null) {
+            return Stream.of("null");
+        }
+        return IntStream.rangeClosed(1, input)
+                .mapToObj(FizzBuzz::valueOf);
     }
 }
