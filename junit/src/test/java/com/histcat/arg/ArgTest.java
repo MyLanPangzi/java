@@ -2,6 +2,8 @@ package com.histcat.arg;
 
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,8 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ArgTest {
@@ -43,12 +44,18 @@ public class ArgTest {
         assertThrows(IllegalArgumentException.class, () -> new ArgParser("-d", "l:boolean:false"));
         assertThrows(IllegalArgumentException.class, () -> new ArgParser("-l", "l:boolean:false").get("d"));
 
-        assertEquals(true, new ArgParser("-l", "l:boolean:false").get("l"));
+        assertEquals(true, new ArgParser("-l", "l:boolean").get("l"));
         assertEquals("1", new ArgParser("-l", "l:string:1").get("l"));
         assertEquals(Integer.valueOf(1), new ArgParser("-l", "l:int:1").get("l"));
         assertEquals(Double.valueOf(100), new ArgParser("-l 100", "l:double:1").get("l"));
         assertEquals(Long.valueOf(100), new ArgParser("-l 100", "l:long:1").get("l"));
+
+        assertIterableEquals(List.of("100"), new ArgParser("-l 100", "l:[string]:[]").get("l"));
+        assertIterableEquals(List.of(100), new ArgParser("-l 100", "l:[int]:[]").get("l"));
+        assertIterableEquals(List.of(100L), new ArgParser("-l 100", "l:[long]:[]").get("l"));
+
     }
+
 
     private class ArgParser {
         private Map<String, Schema> schemas;
@@ -88,7 +95,7 @@ public class ArgTest {
     }
 
     static class Schema {
-        private static final Map<String, Function<String, Object>> types = new HashMap<>() {
+        private static final Map<String, Function<String, ?>> types = new HashMap<>() {
             {
                 put("int", Integer::valueOf);
                 put("integer", Integer::valueOf);
@@ -97,6 +104,9 @@ public class ArgTest {
                 put("string", String::valueOf);
                 put("double", Double::valueOf);
                 put("long", Long::valueOf);
+                put("[string]", s -> Arrays.stream(s.split(",")).map(String::valueOf).collect(toList()));
+                put("[int]", s -> Arrays.stream(s.split(",")).map(Integer::valueOf).collect(toList()));
+                put("[long]", s -> Arrays.stream(s.split(",")).map(Long::valueOf).collect(toList()));
             }
         };
 
@@ -120,6 +130,9 @@ public class ArgTest {
                     return null;
                 }
                 return (T) types.get(type).apply(defaultValue);
+            }
+            if (type.matches("\\[*+\\]")) {
+
             }
             return (T) types.get(type).apply(val);
         }
