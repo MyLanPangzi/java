@@ -3,12 +3,11 @@ package com.histcat.arg;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -16,6 +15,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 
 public class ArgTest {
@@ -39,104 +39,37 @@ public class ArgTest {
      *-l,l,true
      * '-p 8080', p, 8080
      * */
-    @Test
-    public void testParser() throws Exception {
-        assertThrows(IllegalArgumentException.class, () -> new ArgParser("-d", "l:boolean:false"));
-        assertThrows(IllegalArgumentException.class, () -> new ArgParser("-l", "l:boolean:false").get("d"));
 
-        assertEquals(true, new ArgParser("-l", "l:boolean").get("l"));
-        assertEquals("1", new ArgParser("-l", "l:string:1").get("l"));
-        assertEquals(Integer.valueOf(1), new ArgParser("-l", "l:int:1").get("l"));
-        assertEquals(Double.valueOf(100), new ArgParser("-l 100", "l:double:1").get("l"));
-        assertEquals(Long.valueOf(100), new ArgParser("-l 100", "l:long:1").get("l"));
-
-        assertIterableEquals(List.of("100"), new ArgParser("-l 100", "l:[string]:[]").get("l"));
-        assertIterableEquals(List.of(100), new ArgParser("-l 100", "l:[int]:[]").get("l"));
-        assertIterableEquals(List.of(100L), new ArgParser("-l 100", "l:[long]:[]").get("l"));
-
+    @ParameterizedTest
+    @MethodSource
+    public void testSingleValue(String input, String schema, String name, Object value) throws Exception {
+        assertEquals(value, new ArgParser(input, schema).get(name));
     }
 
-
-    private class ArgParser {
-        private Map<String, Schema> schemas;
-        private Map<String, String> kvs;
-
-        public ArgParser(String input, String strSchemas) {
-            resolveSchemas(strSchemas);
-            resolveInput(input);
-        }
-
-        private void resolveSchemas(String strSchemas) {
-            this.schemas = Arrays.stream(strSchemas.split("\\s+"))
-                    .map(s -> s.split(":"))
-                    .map(Schema::new)
-                    .collect(toMap(e -> e.name, e -> e));
-        }
-
-        private void resolveInput(String input) {
-            kvs = Arrays.stream(input.split("-"))
-                    .filter(Predicate.not(String::isBlank))
-                    .map(s -> s.strip().split("\\s+"))
-                    .peek(kvs -> {
-                        if (!schemas.keySet().contains(kvs[0])) {
-                            throw new IllegalArgumentException(kvs[0] + "不在参数列表内");
-                        }
-                    })
-                    .collect(toMap(s -> s[0], s -> s.length >= 2 ? s[1] : schemas.get(s[0]).defaultValue));
-        }
-
-        private <T> T get(String name) {
-            if (!schemas.keySet().contains(name)) {
-                throw new IllegalArgumentException(name + "不存在列表中");
-            }
-            return schemas.get(name).parse(kvs.get(name));
-        }
-
+    static Stream<Arguments> testSingleValue() {
+        return Stream.of(
+                arguments("-b", "b:bool", "b", true),
+                arguments("-i 10", "i:int", "i", 10),
+                arguments("-l 1000000000", "l:long", "l", 1000000000L),
+                arguments("-d 10.0", "d:double", "d", 10.0),
+                arguments("-s s a b c", "s:string", "s", "s a b c")
+        );
     }
 
-    static class Schema {
-        private static final Map<String, Function<String, ?>> types = new HashMap<>() {
-            {
-                put("int", Integer::valueOf);
-                put("integer", Integer::valueOf);
-                put("bool", Boolean::valueOf);
-                put("boolean", Boolean::valueOf);
-                put("string", String::valueOf);
-                put("double", Double::valueOf);
-                put("long", Long::valueOf);
-                put("[string]", s -> Arrays.stream(s.split(",")).map(String::valueOf).collect(toList()));
-                put("[int]", s -> Arrays.stream(s.split(",")).map(Integer::valueOf).collect(toList()));
-                put("[long]", s -> Arrays.stream(s.split(",")).map(Long::valueOf).collect(toList()));
-            }
-        };
-
-        private final String name;
-        private final String type;
-        private final String defaultValue;
-
-        public Schema(String[] schema) {
-            this.name = schema[0];
-            this.type = schema[1];
-            if ("bool".equals(type) || "boolean".equals(type)) {
-                this.defaultValue = "true";
-            } else {
-                this.defaultValue = schema.length == 3 ? schema[2] : null;
-            }
-        }
-
-        public <T> T parse(String val) {
-            if (val == null || val.isBlank()) {
-                if (defaultValue == null) {
-                    return null;
-                }
-                return (T) types.get(type).apply(defaultValue);
-            }
-            if (type.matches("\\[*+\\]")) {
-
-            }
-            return (T) types.get(type).apply(val);
-        }
+    @ParameterizedTest
+    @MethodSource
+    public void testIterable(String input, String schema, String name, List<?> value) throws Exception {
+        assertIterableEquals(value, new ArgParser(input, schema).get(name));
     }
 
+    static Stream<Arguments> testIterable() {
+        return Stream.of(
+                arguments("-list 1,2", "list:[int]", "list", List.of(1, 2)),
+                arguments("-list 1,2", "list:[long]", "list", List.of(1L, 2L)),
+                arguments("-list 1.0,2.0", "list:[double]", "list", List.of(1.0, 2.0)),
+                arguments("-list a b,d c", "list:[string]", "list", List.of("a b", "d c")),
+                arguments("-list false,true", "list:[bool]", "list", List.of(false, true))
+        );
+    }
 }
 
