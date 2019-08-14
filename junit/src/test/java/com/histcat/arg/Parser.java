@@ -14,14 +14,17 @@ public class Parser {
             put("long", Long::valueOf);
             put("double", Double::valueOf);
             put("string", String::valueOf);
-            put("[int]", s -> Arrays.stream(s.split(",")).map(Integer::valueOf).collect(toList()));
-            put("[bool]", s -> Arrays.stream(s.split(",")).map(Boolean::valueOf).collect(toList()));
-            put("[long]", s -> Arrays.stream(s.split(",")).map(Long::valueOf).collect(toList()));
-            put("[double]", s -> Arrays.stream(s.split(",")).map(Double::valueOf).collect(toList()));
-            put("[string]", s -> Arrays.stream(s.split(",")).map(String::valueOf).collect(toList()));
+            put("[int]", makeListParser("int"));
+            put("[bool]", makeListParser("bool"));
+            put("[long]", makeListParser("long"));
+            put("[double]", makeListParser("double"));
+            put("[string]", makeListParser("string"));
         }
     };
 
+    private static Function<String, ?> makeListParser(String type) {
+        return  s -> Arrays.stream(s.split(",")).map(DEFAULT_PARSERS.get(type)).collect(toList());
+    }
     private String name;
     private String value;
     private String defaultValue;

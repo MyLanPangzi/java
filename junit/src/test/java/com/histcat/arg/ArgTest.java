@@ -71,5 +71,11 @@ public class ArgTest {
                 arguments("-list false,true", "list:[bool]", "list", List.of(false, true))
         );
     }
+
+    @Test
+    public void test() throws Exception {
+//        "-b -9 -l -10".split("-")
+
+    }
 }
 
