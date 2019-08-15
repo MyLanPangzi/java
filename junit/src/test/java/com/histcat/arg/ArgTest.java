@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 
-public class ArgTest {
+class ArgTest {
     /*
      *1，应该有几个标记
      *2，每个标记应该是什么类型
@@ -42,40 +42,53 @@ public class ArgTest {
 
     @ParameterizedTest
     @MethodSource
-    public void testSingleValue(String input, String schema, String name, Object value) throws Exception {
+    void testSingleValue(String input, String schema, String name, Object value) {
         assertEquals(value, new ArgParser(input, schema).get(name));
     }
 
+    @SuppressWarnings("unused")
     static Stream<Arguments> testSingleValue() {
         return Stream.of(
                 arguments("-b", "b:bool", "b", true),
+                arguments("", "b:bool", "b", false),
+                arguments("", "b:bool:true", "b", true),
+
                 arguments("-i 10", "i:int", "i", 10),
+                arguments("-i n10", "i:int", "i", -10),
+                arguments("", "i:int", "i", null),
+                arguments("", "i:int:10", "i", 10),
+
                 arguments("-l 1000000000", "l:long", "l", 1000000000L),
+                arguments("-l n1000000000", "l:long", "l", -1000000000L),
+                arguments("", "l:long", "l", null),
+                arguments("", "l:long:100", "l", 100L),
+
                 arguments("-d 10.0", "d:double", "d", 10.0),
-                arguments("-s s a b c", "s:string", "s", "s a b c")
+                arguments("-d n10.0", "d:double", "d", -10.0),
+                arguments("", "d:double", "d", null),
+                arguments("", "d:double:10.0", "d", 10.0),
+
+                arguments("-s 's a b c'", "s:string", "s", "s a b c"),
+                arguments("", "s:string", "s", null),
+                arguments("", "s:string:'s'", "s", "s")
         );
     }
 
     @ParameterizedTest
     @MethodSource
-    public void testIterable(String input, String schema, String name, List<?> value) throws Exception {
+    void testIterable(String input, String schema, String name, List<?> value) {
         assertIterableEquals(value, new ArgParser(input, schema).get(name));
     }
 
+    @SuppressWarnings("unused")
     static Stream<Arguments> testIterable() {
         return Stream.of(
                 arguments("-list 1,2", "list:[int]", "list", List.of(1, 2)),
                 arguments("-list 1,2", "list:[long]", "list", List.of(1L, 2L)),
                 arguments("-list 1.0,2.0", "list:[double]", "list", List.of(1.0, 2.0)),
-                arguments("-list a b,d c", "list:[string]", "list", List.of("a b", "d c")),
+                arguments("-list 'a b','d c'", "list:[string]", "list", List.of("a b", "d c")),
                 arguments("-list false,true", "list:[bool]", "list", List.of(false, true))
         );
-    }
-
-    @Test
-    public void test() throws Exception {
-//        "-b -9 -l -10".split("-")
-
     }
 }
 

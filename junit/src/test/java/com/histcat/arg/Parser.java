@@ -5,15 +5,15 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 
-public class Parser {
+class Parser {
 
     private static final Map<String, Function<String, ?>> DEFAULT_PARSERS = new HashMap<>() {
         {
             put("bool", Boolean::valueOf);
-            put("int", Integer::valueOf);
-            put("long", Long::valueOf);
-            put("double", Double::valueOf);
-            put("string", String::valueOf);
+            put("int", s -> Integer.valueOf(s.replace("n", "-")));
+            put("long", s -> Long.valueOf(s.replace("n", "-")));
+            put("double", s -> Double.valueOf(s.replace("n", "-")));
+            put("string", s -> s.substring(1, s.length() - 1));
             put("[int]", makeListParser("int"));
             put("[bool]", makeListParser("bool"));
             put("[long]", makeListParser("long"));
@@ -23,15 +23,16 @@ public class Parser {
     };
 
     private static Function<String, ?> makeListParser(String type) {
-        return  s -> Arrays.stream(s.split(",")).map(DEFAULT_PARSERS.get(type)).collect(toList());
+        return s -> Arrays.stream(s.split(",")).map(DEFAULT_PARSERS.get(type)).collect(toList());
     }
+
     private String name;
     private String value;
     private String defaultValue;
     private String type;
     private Function<String, ?> parser;
 
-    public Parser(String[] schema) {
+    Parser(String[] schema) {
         Objects.requireNonNull(schema);
         if (schema.length < 2) {
             throw new IllegalArgumentException(Arrays.toString(schema) + "长度不能小于2");
@@ -59,7 +60,7 @@ public class Parser {
         this.value = typeIsBool() ? "true" : value;
     }
 
-    public Object get() {
+    Object get() {
         return value != null ? parser.apply(value)
                 : defaultValue != null ? parser.apply(defaultValue)
                 : null;

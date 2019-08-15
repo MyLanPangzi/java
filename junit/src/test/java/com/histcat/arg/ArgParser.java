@@ -8,10 +8,10 @@ import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toMap;
 
-public class ArgParser {
+class ArgParser {
     private Map<String, Object> values;
 
-    public ArgParser(String input, String schema) {
+    ArgParser(String input, String schema) {
         //1，解析schema->Parser
         Map<String, Parser> parsers = resolveSchema(schema);
         //2，解析input,为schema设值
@@ -33,14 +33,14 @@ public class ArgParser {
         Arrays.stream(input.split("-"))
                 .filter(Predicate.not(String::isBlank))
                 .map(s -> s.strip().split("\\s+", 2))
-                .forEach(kv -> {
-                    parsers.computeIfAbsent(kv[0], key -> {
-                        throw new NoSuchElementException(key + "不在参数解析列表中");
-                    }).set(kv.length == 2 ? kv[1] : null);
-                });
+                .forEach(kv -> parsers.computeIfAbsent(kv[0], key -> {
+                            throw new NoSuchElementException(key + "不在参数解析列表中");
+                        }).set(kv.length == 2 ? kv[1] : null)
+                );
     }
 
-    public <T> T get(String name) {
+    @SuppressWarnings("unchecked")
+    <T> T get(String name) {
         return (T) values.get(name);
     }
 }
