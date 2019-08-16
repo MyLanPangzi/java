@@ -1,25 +1,29 @@
 package com.hiscat.batch.config;
 
+import com.hiscat.batch.entity.Customer;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.item.*;
+import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemStreamException;
+import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
+/**
+ * @author hiscat
+//@Configuration
+ */
 @Slf4j
-@Configuration
 @AllArgsConstructor
-public class ItemStreamReaderConfig {
+public class ItemReaderConfig {
 
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
@@ -51,7 +55,7 @@ public class ItemStreamReaderConfig {
         private Integer cur;
         private Boolean restart;
 
-        public RestartReader() {
+        RestartReader() {
             cur = 0;
             restart = false;
             DefaultLineMapper<Customer> mapper = new DefaultLineMapper<>();
@@ -82,7 +86,7 @@ public class ItemStreamReaderConfig {
             this.flatFileItemReader.open(this.executionContext);
 
             Customer result = flatFileItemReader.read();
-            if (result != null && result.getName().strip().equals("wrong")) {
+            if (result != null && "wrong".equals(result.getName().strip())) {
                 throw new RuntimeException("wrong name " + result.getName());
             } else {
                 cur--;

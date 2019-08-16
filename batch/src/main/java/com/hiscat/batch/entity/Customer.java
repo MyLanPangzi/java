@@ -1,4 +1,4 @@
-package com.hiscat.batch.config;
+package com.hiscat.batch.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,11 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+/**
+ * @author hiscat
+ */
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-class Customer {
+@Builder
+public class Customer {
     private Integer id;
     private String name;
     private Date birthday;
