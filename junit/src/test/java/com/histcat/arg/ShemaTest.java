@@ -27,12 +27,7 @@ class SchemaTest {
                 arguments("b:bool", null, null),
                 arguments("b:bool:true", null, true),
                 arguments("b:bool", "true", true),
-                arguments("b:bool", "false", false),
-
-                arguments("b:int", null, null),
-                arguments("b:int:10", null, 10),
-                arguments("b:int", "1", 1),
-                arguments("b:int", "-1", -1)
+                arguments("b:bool", "false", false)
         );
     }
 
@@ -67,13 +62,23 @@ class SchemaTest {
 
         Schema(String schema) {
             String[] split = schema.split(":");
-            Objects.requireNonNull(split);
+            checkSchema(schema, split);
             this.name = split[0];
             this.type = split[1];
             this.parser = DEFAULT_TYPE_PARSER.computeIfAbsent(this.type, type -> {
                 throw new NoSuchElementException(type + "不在类型解析列表中");
             });
+            parseDefaultValue(split);
+        }
 
+        private void checkSchema(String schema, String[] split) {
+            Objects.requireNonNull(split);
+            if (split.length < 2) {
+                throw new IllegalArgumentException(schema + "格式不正确，正确格式：name:type:defaultValue?");
+            }
+        }
+
+        private void parseDefaultValue(String[] split) {
             if (split.length == 3) {
                 this.defaultValue = parser.apply(split[2]);
             }
