@@ -3,6 +3,7 @@ package com.hiscat.batch.config;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -19,14 +20,19 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * @author hiscat
-//@Configuration
  */
 @Slf4j
+@Configuration
 @AllArgsConstructor
-public class JobOperatorConfig implements ApplicationContextAware {
+public class ScheduleConfig implements ApplicationContextAware {
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
     private JobLauncher jobLauncher;
@@ -34,6 +40,11 @@ public class JobOperatorConfig implements ApplicationContextAware {
     private JobExplorer jobExplore;
     private ApplicationContext applicationContext;
     private JobRegistry jobRegistry;
+
+    @Scheduled(fixedDelay = 5000)
+    public void runScheduleJob() throws Exception {
+        jobOperator().startNextInstance("scheduleJob");
+    }
 
     @Bean
     JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor() throws Exception {
@@ -47,6 +58,7 @@ public class JobOperatorConfig implements ApplicationContextAware {
 
     @Bean
     JobOperator jobOperator() throws Exception {
+        @SuppressWarnings("DuplicatedCode")
         SimpleJobOperator operator = new SimpleJobOperator();
         operator.setJobLauncher(jobLauncher);
         operator.setJobParametersConverter(new DefaultJobParametersConverter());
@@ -60,8 +72,13 @@ public class JobOperatorConfig implements ApplicationContextAware {
 
 
     @Bean
-    Job operatorJob() {
-        return jobBuilderFactory.get("operatorJob")
+    Job scheduleJob() {
+        return jobBuilderFactory.get("scheduleJob")
+                .incrementer(
+                        parameters -> new JobParametersBuilder(Objects.requireNonNull(parameters))
+                                .addDate("jobParameter", new Date())
+                                .toJobParameters()
+                )
                 .start(step1())
                 .build();
     }
@@ -69,7 +86,7 @@ public class JobOperatorConfig implements ApplicationContextAware {
     @Bean
     Step step1() {
         return stepBuilderFactory
-                .get("operatorJobStep")
+                .get("scheduleJobStep")
                 .tasklet((contribution, chunkContext) -> {
                     Object jobParameter = chunkContext.getStepContext().getJobParameters().get("jobParameter");
                     LOGGER.info("job parameter : {}", jobParameter);
