@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--suppress JSUnresolvedLibraryURL -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Run Job</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<form>
+    <p>
+        <input>
+        <button id="button1">Send Job Parameter</button>
+        <button id="button2">Send Job2 Parameter</button>
+    </p>
+</form>
+</body>
+<script>
+    document.querySelector("#button1").addEventListener('click', () => {
+        axios.get(`/job/${document.querySelector('input').value}`)
+            .then(data => console.log(data))
+            .catch(err => console.log(err));
+    });
+
+    document.querySelector("#button2").addEventListener('click', () => {
+        axios.get(`/job2/${document.querySelector('input').value}`)
+            .then(data => console.log(data))
+            .catch(err => console.log(err));
+    });
+
+</script>
+</html>

@@ -11,15 +11,14 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.support.builder.CompositeItemProcessorBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
 /**
  * @author hiscat
+//@Configuration
  */
 @Slf4j
-@Configuration
 @AllArgsConstructor
 public class CompositeProcessorConfig {
     private JobBuilderFactory jobBuilderFactory;
