@@ -1,5 +1,6 @@
 package com.hiscat.spring.annotation;
 
+import com.hiscat.spring.annotation.config.aop.AopConfig;
 import com.hiscat.spring.annotation.config.aware.AwareConfig;
 import com.hiscat.spring.annotation.config.profile.ProfileConfig;
 import com.hiscat.spring.annotation.dao.BookDao;
@@ -109,5 +110,18 @@ class AnnotationTest {
         applicationContext.refresh();
         Arrays.stream(applicationContext.getBeanDefinitionNames()).forEach(System.out::println);
         applicationContext.close();
+    }
+
+    /**
+     * 支持五种切面，Around相当于拿到对象方法手动执行，优先级最高
+     * Around Before After AfterReturning AfterThrowing
+     */
+    @Test
+    void testAop() {
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(AopConfig.class);
+        assertEquals(0, applicationContext.getBean(AopConfig.Calculator.class).div(1, 10));
+        assertThrows(Throwable.class, () -> applicationContext.getBean(AopConfig.Calculator.class).div(1, 0));
+        applicationContext.close();
+
     }
 }
