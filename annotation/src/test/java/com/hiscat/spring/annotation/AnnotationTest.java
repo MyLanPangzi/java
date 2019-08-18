@@ -37,6 +37,7 @@ class AnnotationTest {
     }
 
     /**
+     * 先是spring优先级比较高的BeanPostProcessor处理，再是标准注解BeanPostProcessor处理，接着再是实现了spring接口的方法
      * 初始化：BeanPostProcessor#before > javax标注注解 > 框架接口 > 自定义方法 > BeanPostProcessor#after
      * 销毁：javax标准注解 > 框架接口 > 自定义方法
      * invokeAwareMethods(beanName, bean);
