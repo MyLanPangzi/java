@@ -1,6 +1,10 @@
 package com.hiscat.spring.annotation;
 
+import com.hiscat.spring.annotation.config.aware.AwareConfig;
+import com.hiscat.spring.annotation.dao.BookDao;
+import com.hiscat.spring.annotation.dao.BookDaoImpl2;
 import com.hiscat.spring.annotation.entity.*;
+import com.hiscat.spring.annotation.service.BookService;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -60,6 +64,31 @@ class AnnotationTest {
         assertEquals(2, context.getBean(Cat.class).getAge());
         assertEquals("张三", context.getBean(Person.class).getName());
         assertEquals("M", context.getBean(Person.class).getGender());
+        context.close();
+    }
+
+    /**
+     * Autowired Inject Resource
+     * byType byName
+     * Primary Qualifier
+     */
+    @Test
+    void testAutowired() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                "com.hiscat.spring.annotation.config.autowire",
+                "com.hiscat.spring.annotation.service",
+                "com.hiscat.spring.annotation.dao"
+        );
+        BookDao bookDao = context.getBean(BookService.class).getBookDao();
+        System.out.println(bookDao);
+        assertEquals(bookDao.getClass(), BookDaoImpl2.class);
+        context.close();
+    }
+
+    @Test
+    void testAware() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AwareConfig.class);
+        System.out.println(context.getBean(AwareConfig.class));
         context.close();
     }
 }
