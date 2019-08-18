@@ -1,6 +1,7 @@
 package com.hiscat.spring.annotation;
 
 import com.hiscat.spring.annotation.config.aware.AwareConfig;
+import com.hiscat.spring.annotation.config.profile.ProfileConfig;
 import com.hiscat.spring.annotation.dao.BookDao;
 import com.hiscat.spring.annotation.dao.BookDaoImpl2;
 import com.hiscat.spring.annotation.entity.*;
@@ -37,6 +38,7 @@ class AnnotationTest {
     /**
      * 初始化：BeanPostProcessor#before > javax标注注解 > 框架接口 > 自定义方法 > BeanPostProcessor#after
      * 销毁：javax标准注解 > 框架接口 > 自定义方法
+     * invokeAwareMethods(beanName, bean);
      * populateBean(beanName, mbd, instanceWrapper);
      * exposedObject = initializeBean(beanName, exposedObject, mbd);
      * ****invokeAwareMethods(beanName, bean);
@@ -85,10 +87,27 @@ class AnnotationTest {
         context.close();
     }
 
+    /**
+     * Aware 获取Spring底层组件，在bean 生命周期之前，也是通过BeanPostProcessor处理
+     */
     @Test
     void testAware() {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AwareConfig.class);
         System.out.println(context.getBean(AwareConfig.class));
         context.close();
+    }
+
+    /**
+     * Profile 限定bean的激活范围，多环境切换，用在配置类，Bean方法
+     * ActiveProfiles
+     */
+    @Test
+    void testProfile() {
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+        applicationContext.register(ProfileConfig.class);
+        applicationContext.getEnvironment().setActiveProfiles("dev");
+        applicationContext.refresh();
+        Arrays.stream(applicationContext.getBeanDefinitionNames()).forEach(System.out::println);
+        applicationContext.close();
     }
 }

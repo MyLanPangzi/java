@@ -29,27 +29,25 @@ public class Car implements InitializingBean, DisposableBean {
     public void postConstruct() {
         System.out.println("postConstruct");
     }
-
-
-    @PreDestroy
-    public void preDestroy() {
-        System.out.println("preDestroy");
+    @Override
+    public void afterPropertiesSet() {
+        System.out.println("afterPropertiesSet");
     }
     public void init() {
         System.out.println("init");
     }
 
-    public void close() {
-        System.out.println("close");
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        System.out.println("afterPropertiesSet");
+    @PreDestroy
+    public void preDestroy() {
+        System.out.println("preDestroy");
     }
 
     @Override
     public void destroy() {
         System.out.println("destroy");
+    }
+
+    public void close() {
+        System.out.println("close");
     }
 }
