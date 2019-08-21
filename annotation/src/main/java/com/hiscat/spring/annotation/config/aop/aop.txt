@@ -1,0 +1,24 @@
+@EnableAspectJAutoProxy
+@Import(AspectJAutoProxyRegistrar.class)
+		AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(registry);
+		return registerAspectJAnnotationAutoProxyCreatorIfNecessary(registry, null);
+		return registerOrEscalateApcAsRequired(AnnotationAwareAspectJAutoProxyCreator.class, registry, source);
+
+AnnotationAwareAspectJAutoProxyCreator.class
+public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorAutoProxyCreator {
+    public class AspectJAwareAdvisorAutoProxyCreator extends AbstractAdvisorAutoProxyCreator {
+        public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyCreator {
+            public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
+            		implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware {
+                        public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationAwareBeanPostProcessor {
+                            public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
+
+public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyCreator {
+	public void setBeanFactory(BeanFactory beanFactory) {
+		initBeanFactory((ConfigurableListableBeanFactory) beanFactory);
+		this.advisorRetrievalHelper = new BeanFactoryAdvisorRetrievalHelperAdapter(beanFactory);
+        	private class BeanFactoryAdvisorRetrievalHelperAdapter extends BeanFactoryAdvisorRetrievalHelper {
+                public class BeanFactoryAdvisorRetrievalHelper {
+
+	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) {
+			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
