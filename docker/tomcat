@@ -1,0 +1,7 @@
+java-se-8u40-ri
+apache-tomcat-9.0.27
+jdk-8u231-linux-x64.tar.gz
+apache-tomcat-9.0.27.tar.gz
+jdk1.8.0_231
+CMD /usr/local/apache-tomcat-9.0.27/bin/startup.sh && \
+tail -F /usr/local/apache-tomcat-9.0.27/bin/logs/catalina.out

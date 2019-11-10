@@ -1,0 +1,8 @@
+docker run -p 6379:6379 -v /zzyyuse/myredis/data:/data \
+-v /zzyyuse/myredis/conf/redis.conf:/usr/local/etc/redis/redis.conf \
+-d redis:3.2 redis-server /usr/local/etc/redis/redis.conf --appendonly yes
+
+docker run -dp 6379:6379 \
+-v /root/redis/data:/data \
+-v /root/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf \
+--name redis redis redis-server /usr/local/etc/redis/redis.conf --appendonly yes
