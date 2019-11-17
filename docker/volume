@@ -1,0 +1,5 @@
+docker run -it --name centos-volume \
+-v /root/docker/volumes/v1:/volumes/v1 \
+centos
+
+

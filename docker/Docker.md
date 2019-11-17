@@ -46,14 +46,22 @@ Union 文件系统是 Docker 镜像的基础。<br>
 * Root FS
 * Container layer
 * Image layer
+* 案例：删除tomcat镜像的docs目录，然后提交生成新的镜像
 
 ##数据卷
 * docker run -v --volumes-from
 * 持久化数据
 * 共享数据
 * 数据卷容器，继承父容器数据卷，多容器共享数据卷
+* 案例1：命令添加容器卷
+* 案例2：Dockerfile添加容器卷，并查找主机目录
+* 案例3：数据卷容器，多容器传递数据卷
 ##Dockerfile
 * 镜像的定义，（源码）
+* 熟悉常用字指令
+* 案例1：自定义centos镜像，workdir vim ifconfig
+* 案例2：ip案例，CMD ENTRYPOINT命令区别
+* 案例3：自定义tomcat案例，
 ##常用应用
 * nginx
 * redis
@@ -62,6 +70,7 @@ Union 文件系统是 Docker 镜像的基础。<br>
 * tomcat
 
 ##发布到阿里云
+* 注意idea ssh terminal的字符集设置
 * login
 * tag
 * push

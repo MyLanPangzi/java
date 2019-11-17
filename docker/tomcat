@@ -4,4 +4,10 @@ jdk-8u231-linux-x64.tar.gz
 apache-tomcat-9.0.27.tar.gz
 jdk1.8.0_231
 CMD /usr/local/apache-tomcat-9.0.27/bin/startup.sh && \
-tail -F /usr/local/apache-tomcat-9.0.27/bin/logs/catalina.out
+tail -F /usr/local/apache-tomcat-9.0.27/logs/catalina.out
+
+docker run -itp 8081:8080 \
+-v /root/tomcat/logs:/usr/local/apache-tomcat-9.0.27/logs \
+-v /root/tomcat/webapps/:/usr/local/apache-tomcat-9.0.27/webapps/ \
+--privileged=true \
+--name mytomcat mytomcat

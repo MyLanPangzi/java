@@ -1,0 +1,4 @@
+FROM centos
+LABEL maintainer=smailXie@163.com
+VOLUME ["/volumes/v1", "/volumes/v2"]
+CMD /bin/bash

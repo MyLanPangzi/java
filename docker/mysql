@@ -3,3 +3,13 @@ docker exec mysql5.7 sh -c ' exec mysqldump --all-databases -uroot -p"123456" ' 
 $ docker run --name some-mysql -v /my/own/datadir:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
 $ docker run -it --network some-network --rm mysql mysql -hsome-mysql -uexample-user -p
 $ docker run -it --rm mysql mysql -hsome.mysql.host -usome-mysql-user -p
+$ docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
+--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+docker run \
+--name mysql8.0 \
+-v "$PWD/mysql/data":/var/lib/mysql \
+-v "$PWD/mysql/conf.d":/etc/mysql/conf.d \
+-e MYSQL_ROOT_PASSWORD=123456 \
+-dp 3306:3306 mysql \
+--character-set-server=utf8mb4 \
+--collation-server=utf8mb4_unicode_ci
