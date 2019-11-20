@@ -6,10 +6,19 @@ $ docker run -it --rm mysql mysql -hsome.mysql.host -usome-mysql-user -p
 $ docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 docker run \
---name mysql8.0 \
--v "$PWD/mysql/data":/var/lib/mysql \
--v "$PWD/mysql/conf.d":/etc/mysql/conf.d \
+--name mysql5.5 \
 -e MYSQL_ROOT_PASSWORD=123456 \
--dp 3306:3306 mysql \
+-v "$PWD/mysql5.5/data":/var/lib/mysql \
+-v "$PWD/mysql5.5/conf.d":/etc/mysql/conf.d \
+-dp 3306:3306 mysql:5.5 \
+--character-set-server=utf8mb4 \
+--collation-server=utf8mb4_unicode_ci
+
+docker run \
+--name mysql8.0 \
+-e MYSQL_ROOT_PASSWORD=123456 \
+-v "$PWD/mysql8.0/data":/var/lib/mysql \
+-v "$PWD/mysql8.0/conf.d":/etc/mysql/conf.d \
+-dp 3308:3306 mysql \
 --character-set-server=utf8mb4 \
 --collation-server=utf8mb4_unicode_ci
