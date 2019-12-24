@@ -2,12 +2,9 @@ package com.hiscat.websocket.redis.config;
 
 import com.hiscat.websocket.redis.message.Greeting;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -21,14 +18,30 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+/**
+ * @author Administrator
+ */
+@Slf4j
+@SuppressWarnings("ConstantConditions")
 @Configuration
 @EnableWebSocketMessageBroker
-@Slf4j
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer, ApplicationContextAware {
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private SimpMessagingTemplate simpMessagingTemplate;
+    private RedisMessageListenerContainer redisMessageListenerContainer;
 
     @Autowired
-    private  SimpMessagingTemplate simpMessagingTemplate;
-    private ApplicationContext applicationContext;
+    public void setSimpMessagingTemplate(SimpMessagingTemplate simpMessagingTemplate) {
+        this.simpMessagingTemplate = simpMessagingTemplate;
+    }
+
+    @Autowired
+    public void setRedisMessageListenerContainer(RedisMessageListenerContainer redisMessageListenerContainer) {
+        this.redisMessageListenerContainer = redisMessageListenerContainer;
+    }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -43,25 +56,28 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer, Applic
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(new ChannelInterceptor() {
-            @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                if (StompCommand.SUBSCRIBE.equals(StompHeaderAccessor.getCommand(message.getHeaders()))) {
-                    String destination = StompHeaderAccessor.getDestination(message.getHeaders());
-                    applicationContext.getBean(RedisMessageListenerContainer.class).addMessageListener((message1, pattern) -> {
-                        Greeting payload = new Greeting(new String(message1.getBody()));
-                        String dest = new String(pattern);
-                        LOGGER.info("dest:{}, message:{}", dest, payload);
-                        simpMessagingTemplate.convertAndSend(dest, payload);
-                    }, new PatternTopic(destination));
-                }
-                return message;
-            }
-        });
+        registration.interceptors(new RedisSubscribeChannelInterceptor());
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    /**
+     * 每个节点每个主题最多只能订阅一次
+     */
+    private class RedisSubscribeChannelInterceptor implements ChannelInterceptor {
+        private List<String> topics = new CopyOnWriteArrayList<>();
+
+        @Override
+        public Message<?> preSend(Message<?> message, MessageChannel channel) {
+            StompHeaderAccessor accessor = StompHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+            if (!StompCommand.SUBSCRIBE.equals(accessor.getCommand()) || topics.contains(accessor.getDestination())) {
+                return message;
+            }
+            topics.add(accessor.getDestination());
+            redisMessageListenerContainer.addMessageListener((message1, pattern) -> {
+                Greeting payload = new Greeting(new String(message1.getBody()));
+                LOGGER.info("dest:{}, message:{}", accessor.getDestination(), payload);
+                simpMessagingTemplate.convertAndSend(accessor.getDestination(), payload);
+            }, new ChannelTopic(accessor.getDestination()));
+            return message;
+        }
     }
 }
