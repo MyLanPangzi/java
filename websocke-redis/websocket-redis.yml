@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: websocket-redis
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      websocket-redis: web
+  template:
+    metadata:
+      labels:
+        websocket-redis: web
+    spec:
+      containers:
+        - name: redis
+          image: redis:latest
+---
+apiVersion
