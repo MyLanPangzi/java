@@ -1,5 +1,0 @@
-docker login -p Xiebo0409 -e smailXie@163.com -u 不清楚不知道别问我 registry.cn-hangzhou.aliyuncs.com
-docker login -p 469511fe-3b26-4869-8e09-fbd276d3662e -e smailXie@163.com -u hiscat
-docker login -p Xiebo0409 -e smailXie@163.com -u hiscat
-469511fe-3b26-4869-8e09-fbd276d3662e
-docker login -p Xiebo0409 -e smailXie@163.com -u=twocat0409 registry.cn-hangzhou.aliyuncs.com
