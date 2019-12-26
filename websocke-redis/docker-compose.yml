@@ -1,0 +1,15 @@
+version: '3'
+services:
+  websocket-redis:
+    image: hiscat/websocket-redis
+    ports:
+      - '8080:8080'
+    networks:
+      - ws-redis
+  redis:
+    image: 'redis'
+    networks:
+      - ws-redis
+networks:
+  ws-redis:
+    driver: bridge
