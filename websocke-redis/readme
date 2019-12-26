@@ -1,1 +1,8 @@
 mkdir target/dependency && (cd target/dependency; jar -xf ../*.jar)
+mvn com.google.cloud.tools:jib-maven-plugin:build -Dimage=myorg/myapp
+需要配置profile，账号，密码，仓库
+   <server>
+      <id>registry.hub.docker.com</id>
+      <username>myorg</username>
+      <password>...</password>
+    </server>
