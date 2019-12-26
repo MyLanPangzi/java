@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  server:
+    image: hiscat/spring-discovery-server
+    ports:
+    - '8080:9000'
+    networks:
+      - eureka
+  client:
+    image: hiscat/spring-discovery-client
+    networks:
+      - eureka
+    depends_on:
+      - server
+
+networks:
+  eureka:
+    driver: bridge
