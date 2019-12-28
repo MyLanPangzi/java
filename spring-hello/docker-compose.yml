@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  nginx:
+    image: nginx
+    ports:
+    - 80:80
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf
+  hello-docker:
+    image: hiscat/spring-hello
+    command:
+      --hello.greeting=docker
+  hello-world:
+    image: hiscat/spring-hello
+    command:
+      --hello.greeting=world
