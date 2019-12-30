@@ -1,6 +1,6 @@
 version: '3'
 services:
-  websocket-redis:
+  websocket:
     image: registry.cn-hangzhou.aliyuncs.com/twocat/websocket-redis
     ports:
       - '8080:8080'
