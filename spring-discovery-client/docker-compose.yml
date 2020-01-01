@@ -1,18 +1,36 @@
 version: '3.7'
 services:
   server:
-    image: hiscat/spring-discovery-server
+    image: registry.cn-hangzhou.aliyuncs.com/twocat/spring-discovery-server
+    command:
+      --eureka.client.serviceUrl.defaultZone=http://server:19000/eureka
     ports:
-    - '8080:9000'
+    - '19000:19000'
     networks:
       - eureka
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
   client:
-    image: hiscat/spring-discovery-client
+    image: registry.cn-hangzhou.aliyuncs.com/twocat/spring-discovery-client
+    command:
+      --eureka.client.serviceUrl.defaultZone=http://server:19000/eureka
     networks:
       - eureka
     depends_on:
       - server
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
 
 networks:
   eureka:
-    driver: bridge
+    driver: overlay
