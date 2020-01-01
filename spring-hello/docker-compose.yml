@@ -3,14 +3,39 @@ services:
   nginx:
     image: nginx
     ports:
-    - 80:80
+      - 80:80
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
     volumes:
-    - ./nginx.conf:/etc/nginx/nginx.conf
-  hello-docker:
-    image: hiscat/spring-hello
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - hello
+  #    configs:
+  #      - source: nginx.conf
+  #        target: /etc/nginx/nginx.conf
+  hello-world:
+    image: registry.cn-hangzhou.aliyuncs.com/twocat/spring-hello:20191231155754
+    #    ports:
+    #    - 8080:8080
+    networks:
+      - hello
     command:
       --hello.greeting=docker
-  hello-world:
-    image: hiscat/spring-hello
-    command:
-      --hello.greeting=world
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+#configs:
+#  nginx.conf:
+#    file: ./nginx.conf
+networks:
+  hello:
+#   driver: overlay
