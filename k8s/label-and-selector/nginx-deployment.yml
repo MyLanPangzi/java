@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      enviroment: development
+    matchExpressions:
+      - key: tier
+        operator: In
+        values:
+          - frontend
+  template:
+    metadata:
+      labels:
+        enviroment: development
+        tier: frontend
+    spec:
+      containers:
+        - name: nginx-dev
+          image: nginx
