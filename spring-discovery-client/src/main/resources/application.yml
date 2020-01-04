@@ -8,7 +8,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://server:9000/eureka
+      defaultZone: http://discovery-server:19000/eureka
   instance:
     instance-id: ${spring.cloud.client.ip-address}:${server.port}
     prefer-ip-address: true
