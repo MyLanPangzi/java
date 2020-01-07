@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  labels:
+    app.kubernetes.io/name: db
+    app.kubernetes.io/instance: init-db-instance
+    app.kubernetes.io/version: 1.0.0
+    app.kubernetes.io/component: db
+    app.kubernetes.io/part-of: init-pods-lab
+spec:
+  selector:
+    app.kubernetes.io/name: db
+    app.kubernetes.io/instance: init-db-instance
+    app.kubernetes.io/version: 1.0.0
+    app.kubernetes.io/component: db
+    app.kubernetes.io/part-of: init-pods-lab
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
