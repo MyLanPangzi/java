@@ -1,3 +1,5 @@
+#init 容器会阻塞主容器的运行，知道init容器完全成功退出。如果失败会不停的重启Pods
+#可以用来检测其他服务是否准备就绪，比如web服务依赖db
 apiVersion: v1
 kind: Service
 metadata:
