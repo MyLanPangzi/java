@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rediness
+  labels:
+    app.kubernetes.io/name: rediness
+    app.kubernetes.io/instance: rediness-instance
+    app.kubernetes.io/component: rediness
+    app.kubernetes.io/part-of: probe-labs
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+      imagePullPolicy: IfNotPresent
+      readinessProbe: #只能指定一个
+#        exec:
+#          command:
+#            - test
+#            - -e
+#            - /usr/share/nginx/html/index.html
+        initialDelaySeconds: 1
+        periodSeconds: 3
+        failureThreshold: 3
+        httpGet:
+          port: 80
+          host: www.baidu.com
+          scheme: HTTPS
+#        tcpSocket:
+#          port: 80
+#          host: localhost
+#
