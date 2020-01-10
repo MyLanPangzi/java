@@ -55,6 +55,26 @@
 
     <build>
         <plugins>
+<!--
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <id>timestamp-property</id>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <name>current.time</name>
+                    <pattern>yyyyMMdd-HHmmss</pattern>
+                    <timeZone>GMT+8</timeZone>
+                </configuration>
+            </plugin>
+-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -93,31 +113,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--
-                        <plugin>
-                            <groupId>com.spotify</groupId>
-                            <artifactId>dockerfile-maven-plugin</artifactId>
-                            <version>1.4.13</version>
-                            <executions>
-                                <execution>
-                                    <id>default</id>
-                                    <phase>package</phase>
-                                    <goals>
-                                        <goal>build</goal>
-                                        &lt;!&ndash;                            <goal>push</goal>&ndash;&gt;
-                                    </goals>
-                                </execution>
-                            </executions>
-                            <configuration>
-                                <dockerfile>Dockerfile</dockerfile>
-                                <repository>hiscat/${project.name}</repository>
-                                <tag>${project.version}</tag>
-                                <buildArgs>
-                                    <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-                                </buildArgs>
-                            </configuration>
-                        </plugin>
-            -->
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
@@ -136,7 +131,7 @@
                         <image>openjdk:8-jdk-alpine</image>
                     </from>
                     <to>
-                        <image>hiscat/spring-hello:jib</image>
+                        <image>registry.cn-hangzhou.aliyuncs.com/twocat/spring-hello:${maven.build.timestamp}</image>
                     </to>
                 </configuration>
             </plugin>

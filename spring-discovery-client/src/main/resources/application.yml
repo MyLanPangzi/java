@@ -2,13 +2,10 @@ spring:
   application:
     name: hello
 
-#  spring.application.name=hello
-#  eureka.instance.prefer-ip-address=true
-#  eureka.instance.instance-id=${eureka.instance.prefer-ip-address}:${server.port}
 eureka:
   client:
     service-url:
-      defaultZone: http://server:9000/eureka
+      defaultZone: http://server-service:19000/eureka
   instance:
     instance-id: ${spring.cloud.client.ip-address}:${server.port}
     prefer-ip-address: true

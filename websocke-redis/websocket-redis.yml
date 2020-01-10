@@ -7,14 +7,26 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      websocket-redis: web
+      app: websocket
   template:
     metadata:
       labels:
-        websocket-redis: web
+        app: websocket
     spec:
       containers:
+        - name: websocket
+          image: registry.cn-hangzhou.aliyuncs.com/twocat/websocket-redis
         - name: redis
           image: redis:latest
 ---
-apiVersion
+apiVersion: v1
+kind: Service
+metadata:
+  name: websocket-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: websocket
