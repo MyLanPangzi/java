@@ -19,7 +19,7 @@ spec:
       volumeMounts:
         - mountPath: /data
           name: data
-      command: ["sh", "-c", "echo app >> /data/hello ; sleep 100;"]
+      command: ["sh", "-c", "echo app >> /data/hello ; sleep 200;"]
       lifecycle:
         postStart:
           exec:
@@ -42,6 +42,6 @@ spec:
       readinessProbe:
         exec:
           command: ["sh", "-c", "echo readinessProbe >> /data/hello"]
-        initialDelaySeconds: 3
+        initialDelaySeconds: 30
         periodSeconds: 100
         failureThreshold: 1
