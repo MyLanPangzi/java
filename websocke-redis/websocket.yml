@@ -1,8 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: websocket-redis
-  namespace: default
+  name: websocket-deployment
+  labels:
+    app: websocket
 spec:
   replicas: 1
   selector:
@@ -19,9 +20,7 @@ spec:
           command:
             - sh
             - -c
-            - java -cp /app/resources:/app/classes:/app/libs/* com.hiscat.websocket.redis.Application --spring.redis.host=localhost
-        - name: redis
-          image: redis
+            - java -cp /app/resources:/app/classes:/app/libs/* com.hiscat.websocket.redis.Application --spring.redis.host=redis-service
 ---
 apiVersion: v1
 kind: Service
