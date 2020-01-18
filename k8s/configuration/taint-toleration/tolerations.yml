@@ -1,0 +1,81 @@
+#kubectl taint node k8s-node1 no-execute=:NoExecute
+#kubectl taint node k8s-node2 no-schedule=:NoSchedule
+#kubectl taint node k8s-node3-nfs prefer-no-schedule=:PreferNoSchedule
+
+#kubectl apply -f -<<EOF
+#kubectl delete deploy --all --force --grace-period 0
+#kubectl taint node k8s-node1 no-execute=:NoExecute-
+#kubectl taint node k8s-node2 no-schedule=:NoSchedule-
+#kubectl taint node k8s-node3-nfs prefer-no-schedule=:PreferNoSchedule-
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: no-execute-toleration
+  labels:
+    test: no-execute-toleration
+spec:
+  selector:
+    matchLabels:
+      test: no-execute-toleration
+  template:
+    metadata:
+      labels:
+        test: no-execute-toleration
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-node1
+      tolerations:
+        - key: no-execute
+          effect: NoExecute
+      containers:
+        - name: nginx
+          image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: no-schedule-toleration
+  labels:
+    test: no-schedule-toleration
+spec:
+  selector:
+    matchLabels:
+      test: no-schedule-toleration
+  template:
+    metadata:
+      labels:
+        test: no-schedule-toleration
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-node2
+      tolerations:
+        - effect: NoSchedule
+          key: no-schedule
+      containers:
+        - name: nginx
+          image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prefer-no-schedule-toleration
+  labels:
+    test: prefer-no-schedule-toleration
+spec:
+  selector:
+    matchLabels:
+      test: prefer-no-schedule-toleration
+  template:
+    metadata:
+      labels:
+        test: prefer-no-schedule-toleration
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-node3-nfs
+      tolerations:
+        - effect: PreferNoSchedule
+          key: prefer-no-schedule
+      containers:
+        - name: nginx
+          image: nginx
