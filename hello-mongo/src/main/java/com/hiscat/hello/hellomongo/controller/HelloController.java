@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @author Administrator
  */
@@ -15,8 +17,8 @@ public class HelloController {
 
     private final CustomerRepository customerRepository;
 
-    @GetMapping("/customer")
-    public Customer findByFirstName(String firstName) {
-        return customerRepository.findByFirstName(firstName);
+    @GetMapping("/customers")
+    public List<Customer> findByFirstName(String firstName) {
+        return customerRepository.findAll();
     }
 }

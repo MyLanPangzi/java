@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/part-of: mongo-lab
     app.kubernetes.io/component: web-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
     - port: 8080
       targetPort: 8080
@@ -74,9 +74,10 @@ spec:
       containers:
         - name: hello-mongo
           image: registry.cn-hangzhou.aliyuncs.com/twocat/hello-mongo
+          args:
+            - --spring.data.mongodb.host=mongo
           ports:
             - containerPort: 8080
-          command: ["sh","-c","java -cp /app/resources:/app/classes:/app/libs/* com.hiscat.hello.hellomongo.HelloMongoApplication --spring.data.mongodb.host=mongo"]
 ---
 apiVersion: apps/v1
 kind: Deployment
