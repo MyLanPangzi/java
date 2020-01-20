@@ -22,10 +22,10 @@ spec:
     - metadata:
         name: nfs
       spec:
+        storageClassName: nfs
         resources:
           requests:
             storage: '3Gi'
-        storageClassName: 'nfs'
         accessModes: ['ReadWriteOnce']
   template:
     metadata:

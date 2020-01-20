@@ -1,0 +1,48 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs
+  labels:
+    app: hiscat-nfs-client-provisioner
+parameters:
+  archiveOnDelete: "true"
+provisioner: cluster.local/nfs-provisioner-nfs-client-provisioner
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-dynamic-pv-pvc
+spec:
+  restartPolicy: OnFailure
+  containers:
+    - name: test-dynamic-pv-pvc
+      image: busybox
+      command:
+        - /bin/sh
+      args:
+        - -c
+        - touch /mnt/dynamic/$RANDOM && exit 0 || exit 1
+      volumeMounts:
+        - mountPath: /mnt/dynamic
+          name: dynamic-pv-pvc
+  volumes:
+    - name: dynamic-pv-pvc
+      persistentVolumeClaim:
+        claimName: dynamic-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dynamic-pvc
+spec:
+  storageClassName: nfs
+  accessModes:
+    - ReadWriteMany
+  resources:
+    limits:
+      storage: 3Mi
+    requests:
+      storage: 2Mi
