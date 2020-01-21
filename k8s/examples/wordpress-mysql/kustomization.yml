@@ -1,0 +1,7 @@
+secretGenerator:
+  - name: mysql-pwd
+    literals:
+      - password=Xiebo0409
+resources:
+  - mysql.yaml
+  - wordpress.yaml
