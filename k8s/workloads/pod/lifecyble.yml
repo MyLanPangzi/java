@@ -1,11 +1,24 @@
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lifecycle-pvc
+spec:
+  resources:
+    requests:
+      storage: 3Mi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nfs
+---
+apiVersion: v1
 kind: Pod
 metadata:
   name: lifecyble-test
 spec:
   volumes:
     - name: data
-      emptyDir: {}
+      persistentVolumeClaim:
+        claimName: lifecycle-pvc
   initContainers:
     - name: init
       image: busybox
@@ -37,11 +50,11 @@ spec:
         exec:
           command: ["sh", "-c", "echo livenessProbe >> /data/hello"]
         initialDelaySeconds: 1
-        periodSeconds: 100
+        periodSeconds: 5
         failureThreshold: 1
       readinessProbe:
         exec:
           command: ["sh", "-c", "echo readinessProbe >> /data/hello"]
-        initialDelaySeconds: 30
-        periodSeconds: 100
+        initialDelaySeconds: 3
+        periodSeconds: 5
         failureThreshold: 1
