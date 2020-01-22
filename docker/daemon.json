@@ -1,0 +1,4 @@
+{
+  "hosts": ["unix:///var/run/docker.sock", "tcp://127.0.0.1:2375","tcp://192.168.11.136:2375"],
+  "registry-mirrors": ["https://a17tqp4p.mirror.aliyuncs.com"]
+}
