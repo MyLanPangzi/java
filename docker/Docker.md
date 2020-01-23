@@ -57,12 +57,14 @@ Union 文件系统是 Docker 镜像的基础。<br>
 * 案例2：Dockerfile添加容器卷，并查找主机目录
 * 案例3：数据卷容器，多容器传递数据卷
 ##Dockerfile
+
 * 镜像的定义，（源码）
 * 熟悉常用字指令
 * 案例1：自定义centos镜像，workdir vim ifconfig
 * 案例2：ip案例，CMD ENTRYPOINT命令区别
 * 案例3：自定义tomcat案例，
 ##常用应用
+
 * nginx
 * redis
 * mongo
@@ -70,7 +72,12 @@ Union 文件系统是 Docker 镜像的基础。<br>
 * tomcat
 
 ##发布到阿里云
+
 * 注意idea ssh terminal的字符集设置
 * login
 * tag
 * push
+
+##常见问题
+
+* 启动过快：修改daemon.json，删除错误的hosts配置

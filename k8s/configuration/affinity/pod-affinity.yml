@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-affinity-node1-nginx
+spec:
+  selector:
+    matchLabels:
+      app: pod-affinity-node1-nginx
+  template:
+    metadata:
+      labels:
+        app: pod-affinity-node1-nginx
+    spec:
+      containers:
+        - name: pod-affinity-node1-nginx
+          image: nginx
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - node1-nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-affinity-node2-nginx
+spec:
+  selector:
+    matchLabels:
+      app: pod-affinity-node2-nginx
+  template:
+    metadata:
+      labels:
+        app: pod-affinity-node2-nginx
+    spec:
+      containers:
+        - name: pod-affinity-node2-nginx
+          image: nginx
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution: #其实不会生效，软的要服从硬的。
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - node2-nginx
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - node1-nginx

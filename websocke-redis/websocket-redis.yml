@@ -16,8 +16,12 @@ spec:
       containers:
         - name: websocket
           image: registry.cn-hangzhou.aliyuncs.com/twocat/websocket-redis
+          command:
+            - sh
+            - -c
+            - java -cp /app/resources:/app/classes:/app/libs/* com.hiscat.websocket.redis.Application --spring.redis.host=localhost
         - name: redis
-          image: redis:latest
+          image: redis
 ---
 apiVersion: v1
 kind: Service

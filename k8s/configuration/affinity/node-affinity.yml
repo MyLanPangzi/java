@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node1-nginx
+spec:
+  selector:
+    matchLabels:
+      app: node1-nginx
+  template:
+    metadata:
+      labels:
+        app: node1-nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k8s-node1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node2-nginx
+spec:
+  selector:
+    matchLabels:
+      app: node2-nginx
+  template:
+    metadata:
+      labels:
+        app: node2-nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - k8s-node2
+              weight: 2
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - k8s-node1

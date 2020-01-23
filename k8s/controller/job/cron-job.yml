@@ -1,0 +1,23 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: test-cronjob
+  labels:
+    test: cronjob
+spec:
+  jobTemplate:
+    metadata:
+      labels:
+        app: cron-job
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: busybox
+              image: busybox
+              command:
+                - sh
+                - -c
+                - echo -e "$(date '+%F %H:%M:%S')"
+  schedule: '*/1 * * * *'

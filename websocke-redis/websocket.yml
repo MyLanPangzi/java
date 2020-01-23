@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: websocket-deployment
+  labels:
+    app: websocket
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: websocket
+  template:
+    metadata:
+      labels:
+        app: websocket
+    spec:
+      containers:
+        - name: websocket
+          image: registry.cn-hangzhou.aliyuncs.com/twocat/websocket-redis
+          command:
+            - sh
+            - -c
+            - java -cp /app/resources:/app/classes:/app/libs/* com.hiscat.websocket.redis.Application --spring.redis.host=redis-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: websocket-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: websocket

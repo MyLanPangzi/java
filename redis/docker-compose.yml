@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  redis:
+    image: redis:5.0.7
+  hello-redis:
+    image: registry.cn-hangzhou.aliyuncs.com/twocat/hello-redis
+    command:
+      - --spring.redis.host=redis
+    ports:
+      - 8080:8080

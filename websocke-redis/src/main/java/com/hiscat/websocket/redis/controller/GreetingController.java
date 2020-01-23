@@ -9,6 +9,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
+/**
+ * @author Administrator
+ */
 @Controller
 @AllArgsConstructor
 @Slf4j
@@ -16,7 +19,7 @@ public class GreetingController {
     private final StringRedisTemplate stringRedisTemplate;
 
     @MessageMapping("/hello/{var}")
-    public void greeting(@DestinationVariable String var, @Payload HelloMessage message) throws Exception {
+    public void greeting(@DestinationVariable String var, @Payload HelloMessage message) {
         LOGGER.info("var:{}, message:{}", var, message);
         stringRedisTemplate.convertAndSend(String.format("/topic/%s", var), message.getName());
     }
