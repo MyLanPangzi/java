@@ -1,0 +1,32 @@
+GET http://localhost:8080/employees
+Accept: application/json
+
+###
+
+POST http://localhost:8080/employees/
+Content-Type: application/json
+
+{
+  "name": "hiscat",
+  "role": "minion of cat"
+}
+
+###
+PUT http://localhost:8080/employees/3
+Content-Type: application/json
+
+{
+  "name": "twocat",
+  "role": "minion of cat"
+}
+
+###
+DELETE localhost:8080/employees/3
+
+###
+GET localhost:8080/employees/3
+Accept: application/json
+
+###
+
+
