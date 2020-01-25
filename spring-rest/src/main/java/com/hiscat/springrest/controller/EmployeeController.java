@@ -1,12 +1,18 @@
 package com.hiscat.springrest.controller;
 
+import com.hiscat.springrest.assembler.EmployeeRepresentationModelAssembler;
 import com.hiscat.springrest.entity.Employee;
 import com.hiscat.springrest.exception.EmployeeNotFoundException;
 import com.hiscat.springrest.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.LinkRelation;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @author Administrator
@@ -15,26 +21,32 @@ import java.util.List;
 @AllArgsConstructor
 public class EmployeeController {
     private final EmployeeRepository employeeRepository;
+    private final EmployeeRepresentationModelAssembler employeeRepresentationModelAssembler;
 
     @GetMapping("/employees")
-    List<Employee> all() {
-        return this.employeeRepository.findAll();
+    public CollectionModel<EntityModel<Employee>> all() {
+        return this.employeeRepresentationModelAssembler.toCollectionModel(this.employeeRepository.findAll());
     }
 
     @PostMapping("/employees")
-    Employee newEmployee(@RequestBody Employee employee) {
-        return this.employeeRepository.save(employee);
+    public ResponseEntity<?> newEmployee(@RequestBody Employee employee) {
+        Employee save = this.employeeRepository.save(employee);
+        EntityModel<Employee> model = this.employeeRepresentationModelAssembler.toModel(save);
+        return ResponseEntity
+                .created(URI.create(model.getLink(LinkRelation.of("self")).get().getHref()))
+                .body(model);
     }
 
     @GetMapping("/employees/{id}")
-    Employee one(@PathVariable Long id) {
-        return this.employeeRepository.findById(id)
+    public EntityModel<Employee> one(@PathVariable Long id) {
+        Employee employee = this.employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException(id));
+        return this.employeeRepresentationModelAssembler.toModel(employee);
     }
 
     @PutMapping("/employees/{id}")
-    Employee replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
-        return this.employeeRepository.findById(id)
+    public ResponseEntity<EntityModel<Employee>> replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) throws URISyntaxException {
+        Employee employee = this.employeeRepository.findById(id)
                 .map(e -> {
                     e.setName(newEmployee.getName());
                     e.setRole(newEmployee.getRole());
@@ -44,10 +56,15 @@ public class EmployeeController {
                     newEmployee.setId(id);
                     return this.employeeRepository.save(newEmployee);
                 });
+        EntityModel<Employee> model = this.employeeRepresentationModelAssembler.toModel(employee);
+        return ResponseEntity
+                .created(new URI(model.getRequiredLink("self").getHref()))
+                .body(model);
     }
 
     @DeleteMapping("/employees/{id}")
-    void deleteEmployee(@PathVariable Long id) {
+    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
         this.employeeRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

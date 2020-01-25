@@ -7,7 +7,7 @@ POST http://localhost:8080/employees/
 Content-Type: application/json
 
 {
-  "name": "hiscat",
+  "name": "his cat",
   "role": "minion of cat"
 }
 
@@ -29,4 +29,21 @@ Accept: application/json
 
 ###
 
+GET http://localhost:8080/orders
+Accept: application/json
+
+###
+
+GET http://localhost:8080/orders/4
+Accept: application/json
+
+###
+DELETE http://localhost:8080/orders/4/cancel
+Accept: application/json
+
+###
+PUT http://localhost:8080/orders/4/complete
+Accept: application/json
+
+###
 

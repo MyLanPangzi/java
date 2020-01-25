@@ -1,5 +1,6 @@
-package com.hiscat.springrest.exception;
+package com.hiscat.springrest.advice;
 
+import com.hiscat.springrest.exception.EmployeeNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
