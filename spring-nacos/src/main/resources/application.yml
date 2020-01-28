@@ -1,9 +1,0 @@
-server:
-  port: 8070
-spring:
-  application:
-    name: service-provider
-  cloud:
-    nacos:
-      discovery:
-        server-addr: localhost:8848
