@@ -1,0 +1,9 @@
+# Spring boot application
+spring:
+  application:
+    name: spring-dubbo-provider
+server:
+  port: 9010
+dubbo:
+  protocol:
+    serialization: kryo
