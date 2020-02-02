@@ -1,0 +1,42 @@
+#secret, configMap, downwardAPI,  serviceAccountToken
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-projected-cm
+data:
+  cm: cm
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: task-projected-secret
+stringData:
+  username: hello
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-projected-pod
+spec:
+  containers:
+    - name: task-projected-container
+      image: busybox
+      command:
+        - sleep
+        - "3600"
+      volumeMounts:
+        - mountPath: /task-project-storage
+          name: task-project-storage
+  volumes:
+    - name: task-project-storage
+      projected:
+        sources:
+          - configMap:
+              name: task-projected-cm
+          - secret:
+              name: task-projected-secret
+          - downwardAPI:
+              items:
+                - path: downwardAPI
+                  fieldRef:
+                    fieldPath: metadata.name
