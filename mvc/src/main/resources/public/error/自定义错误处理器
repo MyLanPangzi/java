@@ -1,3 +1,0 @@
-1，使用@ControllerAdvice注解，然后在方法上使用@ExceptionHandler注解，可以注入Exception
-2，可以返回视图，或者转发，重定向
-3，可自定义ErrorAttributes，进行约定，重写默认的错误输出
