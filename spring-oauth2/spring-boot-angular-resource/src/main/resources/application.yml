@@ -1,0 +1,13 @@
+server:
+  port: 9000
+  address: localhost
+spring:
+  redis:
+    host: 192.168.2.136
+  session:
+    store-type: redis
+logging:
+  level:
+    org.springframework:
+      security: DEBUG
+      session: TRACE

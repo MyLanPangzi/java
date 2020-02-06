@@ -45,6 +45,7 @@ public class SpringBootOauth2Application extends WebSecurityConfigurerAdapter {
         return WebClient.builder()
                 .filter(oauth2).build();
     }
+
     @Bean
     public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService(WebClient rest) {
         DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
