@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-hooks-pod
+spec:
+  volumes:
+    - name: data
+      hostPath:
+        path: /data
+        type: DirectoryOrCreate
+  containers:
+    - name: nginx
+      image: nginx
+      volumeMounts:
+        - mountPath: /data
+          name: data
+      lifecycle:
+        postStart:
+          exec:
+            command:
+              - sh
+              - -c
+              - echo "hello from post start handler" >> /data/hello
+        preStop:
+          exec:
+            command:
+              - sh
+              - -c
+              - echo "hello from pre stop handler" >> /data/hello
+
