@@ -1,0 +1,28 @@
+#kubectl apply -f -<<EOF
+#kubectl diff -f -<<EOF 第一次双路对比 三路对比
+#kubectl apply -f -<<EOF --prune
+#kubectl create -f -<<EOF
+#kubectl replace -f -<<EOF
+#kubectl delete -f -<<EOF
+#kubectl get deploy task -o yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-mko-dec-create-deploy
+spec:
+  replicas: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: web
+          image: nginx
+          ports:
+            - containerPort: 80
