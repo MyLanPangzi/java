@@ -1,0 +1,16 @@
+#ps -ef |grep kubelet
+#查看配置文件在哪个目录
+#/var/lib/kubelet/config.yaml
+#/etc/kubernetes/manifest
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-static-pod
+spec:
+  containers:
+    - name: web
+      image: nginx
+      ports:
+        - containerPort: 80
+          protocol: TCP
+          name: web
