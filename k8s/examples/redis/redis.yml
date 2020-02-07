@@ -1,28 +1,3 @@
-apiVersion: v1
-kind: Pod
-metadata:
-  name: redis
-spec:
-  containers:
-    - name: redis
-      image: redis
-      command:
-        - redis-server
-        - /etc/config/redis.conf
-      volumeMounts:
-        - mountPath: /etc/config/
-          name: redisconfig
-        - mountPath: /data
-          name: data
-  volumes:
-    - name: data
-      emptyDir: {}
-    - name: redisconfig
-      configMap:
-        name: redis-config
-        items:
-          - key: redis.conf
-            path: redis.conf
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -1401,3 +1376,30 @@ data:
     # Maximum number of set/hash/zset/list fields that will be processed from
     # the main dictionary scan
     # active-defrag-max-scan-fields 1000
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+spec:
+  containers:
+    - name: redis
+      image: redis
+      command:
+        - redis-server
+        - /etc/config/redis.conf
+      volumeMounts:
+        - mountPath: /etc/config/
+          name: redisconfig
+        - mountPath: /data
+          name: data
+  volumes:
+    - name: data
+      emptyDir: {}
+    - name: redisconfig
+      configMap:
+        name: redis-config
+        items:
+          - key: redis.conf
+            path: redis.conf

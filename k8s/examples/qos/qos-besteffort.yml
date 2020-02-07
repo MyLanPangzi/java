@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: Pod
-metadata:
-  namespace: qos-example
-  name: qos-demo-3
-spec:
-  containers:
-    - name: qos-demo-ctr-3
-      image: nginx

@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: qos-example
+---
+#guaranteed
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: qos-example
+  name: qos-demo
+spec:
+  containers:
+    - name: qos-demo-ctr
+      image: nginx
+      resources:
+        limits:
+          memory: 200Mi
+          cpu: 700m
+        requests:
+          memory: 200Mi
+          cpu: 700m
+---
+#burstable
+apiVersion: v1
+kind: Pod
+metadata:
+  name: qos-demo-2
+  namespace: qos-example
+spec:
+  containers:
+    - name: qos-demo-ctr-2
+      image: nginx
+      resources:
+        limits:
+          memory: 200Mi
+        requests:
+          memory: 100Mi
+---
+#burstable
+apiVersion: v1
+kind: Pod
+metadata:
+  name: qos-demo-4
+  namespace: qos-example
+spec:
+  containers:
+    - name: qos-demo-ctr-4
+      image: nginx
+      resources:
+        requests:
+          memory: 200Mi
+    - name: qos-demo-ctr-4-2
+      image: redis:5.0.7
+---
+#besteffort
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: qos-example
+  name: qos-demo-3
+spec:
+  containers:
+    - name: qos-demo-ctr-3
+      image: nginx
