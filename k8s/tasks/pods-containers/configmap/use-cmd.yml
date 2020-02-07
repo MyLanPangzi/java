@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-cm-cmd
+data:
+  SPECIAL_LEVEL: very
+  SPECIAL_TYPE: charm
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-cm-cmd-pod
+spec:
+  restartPolicy: Never
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["sh", "-c", "echo \$(SPECIAL_LEVEL_KEY) \$(SPECIAL_TYPE_KEY)"] #kubectl apply -f -<<EOF 下使用这行
+      #      command: ["sh", "-c", "echo $(SPECIAL_LEVEL_KEY) $(SPECIAL_TYPE_KEY)"] #kubectl apply -f 普通文件用这行
+      env:
+        - name: SPECIAL_LEVEL_KEY
+          valueFrom:
+            configMapKeyRef:
+              key: SPECIAL_LEVEL
+              name: task-cm-cmd
+        - name: SPECIAL_TYPE_KEY
+          valueFrom:
+            configMapKeyRef:
+              key: SPECIAL_TYPE
+              name: task-cm-cmd

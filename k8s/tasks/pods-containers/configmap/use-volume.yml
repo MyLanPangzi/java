@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-cm-vol
+data:
+  SPECIAL_LEVEL: very
+  SPECIAL_TYPE: charm
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-cm-vol-pod
+spec:
+  restartPolicy: Never
+  volumes:
+    - name: config-volume
+      configMap:
+        name: task-cm-vol
+  containers:
+    - name: busybox
+      image: busybox
+      command:
+        - sh
+        - -c
+        - ls /etc/config
+      volumeMounts:
+        - mountPath: /etc/config
+          name: config-volume
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-cm-vol-specific-path-pod
+spec:
+  restartPolicy: Never
+  volumes:
+    - name: config-volume
+      configMap:
+        name: task-cm-vol
+        items:
+          - key: SPECIAL_LEVEL
+            path: keys
+  containers:
+    - name: busybox
+      image: busybox
+      command:
+        - sh
+        - -c
+        - cat /etc/config/keys
+      volumeMounts:
+        - mountPath: /etc/config
+          name: config-volume
