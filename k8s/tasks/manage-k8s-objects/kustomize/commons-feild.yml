@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: my-namespace
+namePrefix: dev-
+nameSuffix: "-001"
+commonLabels:
+  app: bingo
+commonAnnotations:
+  oncallPager: "8000"
+resources:
+  - deployment.yml
