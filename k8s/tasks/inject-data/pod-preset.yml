@@ -1,0 +1,102 @@
+#https://kubernetes.io/docs/tasks/inject-data-application/podpreset/
+#https://kubernetes.io/docs/concepts/workloads/pods/podpreset/
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-inject-data-pod-preset-cm
+data:
+  number_of_members: "1"
+  initial_cluster_state: new
+  initial_cluster_token: DUMMY_ETCD_INITIAL_CLUSTER_TOKEN
+  discovery_token: DUMMY_ETCD_DISCOVERY_TOKEN
+  discovery_url: http://etcd_discovery:2379
+  etcdctl_peers: http://etcd:2379
+  duplicate_key: FROM_CONFIG_MAP
+  REPLACE_ME: "a value"
+---
+apiVersion: settings.k8s.io/v1alpha1
+kind: PodPreset
+metadata:
+  name: task-inject-data-pod-preset-demo
+spec:
+  selector:
+    matchLabels:
+      role: frontend
+  envFrom:
+    - configMapRef:
+        name: task-inject-data-pod-preset-cm
+  env:
+    - name: DB_PORT
+      value: "6379"
+  volumeMounts:
+    - mountPath: /cache
+      name: cache-volume
+  volumes:
+    - name: cache-volume
+      emptyDir: {}
+---
+apiVersion: settings.k8s.io/v1alpha1
+kind: PodPreset
+metadata:
+  name: task-inject-data-pod-preset-demo-2
+spec:
+  selector:
+    matchLabels:
+      role: frontend
+  volumeMounts:
+    - mountPath: /etc/proxy/configs
+      name: proxy-volume
+  volumes:
+    - name: proxy-volume
+      emptyDir: {}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-inject-data-pod-preset-pod
+  labels:
+    role: frontend
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+      ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: task-inject-pod-preset-rs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      role: frontend
+  template:
+    metadata:
+      labels:
+        role: frontend
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-inject-data-pod-preset-confilct-pod
+  labels:
+    role: frontend
+spec:
+  volumes:
+    - name: my-proxy
+      emptyDir: {}
+  containers:
+    - name: nginx
+      image: nginx
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - mountPath: /etc/proxy/configs
+          name: my-proxy

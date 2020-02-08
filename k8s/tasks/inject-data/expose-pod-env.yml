@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-inject-data-expose-podinfo-pod
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command:
+        - sh
+        - -c
+      args:
+        - while true;do
+          echo -en '\n';
+          printenv MY_NODE_NAME MY_POD_NAME MY_POD_NAMESPACE;
+          printenv MY_NODE_IP MY_POD_SERVICEACCOUNT;
+          sleep 10;
+          done;
+      env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: MY_POD_SERVICEACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: task-inject-data-containerinfo-pod
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command:
+        - sh
+        - -c
+      args:
+        - while true; do
+          echo -en '\n';
+          printenv MY_CPU_REUQUEST MY_CPU_LIMIT;
+          printenv MY_MEM_REUQUEST MY_MEM_LIMIT;
+          sleep 10;
+          done;
+      resources:
+        requests:
+          memory: 32Mi
+          cpu: 125m
+        limits:
+          memory: 64Mi
+          cpu: 250m
+      env:
+        - name: MY_CPU_REUQUEST
+          valueFrom:
+            resourceFieldRef:
+              resource: requests.cpu
+              containerName: busybox
+        - name: MY_CPU_LIMIT
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.cpu
+              containerName: busybox
+        - name: MY_MEM_REUQUEST
+          valueFrom:
+            resourceFieldRef:
+              resource: requests.memory
+              containerName: busybox
+        - name: MY_MEM_LIMIT
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.memory
+              containerName: busybox
+
