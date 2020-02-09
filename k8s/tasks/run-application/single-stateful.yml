@@ -1,0 +1,61 @@
+#https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-run-app-single-stateful-mysql
+  labels:
+    app: mysql
+spec:
+  selector:
+    app: mysql
+  clusterIP: None
+  ports:
+    - port: 3306
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-run-app-single-stateful-pvc
+  labels:
+    app: mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+    limits:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-run-app-single-stateful-mysql-deploy
+  labels:
+    app: mysql
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      volumes:
+        - name: task-run-app-single-stateful-volume
+          persistentVolumeClaim:
+            claimName: task-run-app-single-stateful-pvc
+      containers:
+        - name: mysql
+          image: mysql:5.6
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: task-run-app-single-stateful-volume
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: password
+          ports:
+            - containerPort: 3306

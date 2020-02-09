@@ -1,0 +1,21 @@
+#https://kubernetes.io/docs/tasks/run-application/update-api-object-kubectl-patch/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-run-app-in-place-update-deploy
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+      tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          value: test-team
