@@ -4,12 +4,19 @@ package com.hiscat.hadoophello;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.*;
 import java.util.Arrays;
 
 /**
@@ -44,7 +51,35 @@ public class HDFSClientTests {
         printer.print();
     }
 
+    @Test
+    void testIOUploadDownload() throws IOException, URISyntaxException {
+        try (InputStream inputStream = this.getClass().getResourceAsStream("/logback.xml");
+             FSDataOutputStream outputStream = fs.create(new Path("logback.xml"))) {
+            IOUtils.copyBytes(inputStream, outputStream, conf);
+        }
 
+        try (final FSDataInputStream in = fs.open(new Path("logback.xml"));) {
+            final java.nio.file.Path target = Paths.get(this.getClass().getResource("/").toURI().resolve("logback.xml"));
+            LOGGER.info("target:{}", target);
+            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    @Test
+    void testMultiPartDownload() throws IOException, URISyntaxException {
+        final long count = (long) 1024 * 1024 * 128;
+        final java.nio.file.Path part1 = Paths.get(this.getClass().getResource("/").toURI().resolve("openjdk-13.0.2_linux-x64_bin.tar.gz.part1"));
+        try (final FSDataInputStream in = fs.open(new Path("openjdk-13.0.2_linux-x64_bin.tar.gz"));
+             final OutputStream out = Files.newOutputStream(part1, StandardOpenOption.CREATE, StandardOpenOption.WRITE);) {
+            IOUtils.copyBytes(in, out, count, false);
+        }
+
+        final java.nio.file.Path part2 = Paths.get(this.getClass().getResource("/").toURI().resolve("openjdk-13.0.2_linux-x64_bin.tar.gz.part2"));
+        try (final FSDataInputStream in = fs.open(new Path("openjdk-13.0.2_linux-x64_bin.tar.gz"));) {
+            in.seek(count);
+            Files.copy(in, part2);
+        }
+    }
 
     @Test
     void testConnect() throws IOException, InterruptedException {
