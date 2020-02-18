@@ -1,10 +1,8 @@
 package com.hiscat.custom.inputformat;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -33,7 +31,6 @@ public class CustomInputFormatTest {
 
         //out
         FileOutputFormat.setOutputPath(job, new Path("E:\\github\\java\\hadoop\\custom-input-format\\src\\main\\resources\\output"));
-//        job.setOutputFormatClass(SequenceFileOutputFormat.class);
         job.setReducerClass(IntSumReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
@@ -44,12 +41,11 @@ public class CustomInputFormatTest {
     }
 
     @Slf4j
-    private static class WordCountMapper extends Mapper<Text, BytesWritable, Text, IntWritable> {
+    private static class WordCountMapper extends Mapper<Text, Text, Text, IntWritable> {
         @Override
-        protected void map(Text key, BytesWritable value, Context context) throws IOException, InterruptedException {
-            final String val = new String(value.getBytes());
-            LOGGER.info("val:{}", val);
-            StringTokenizer tokenizer = new StringTokenizer(val);
+        protected void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+            LOGGER.info("val:{}", value.toString());
+            StringTokenizer tokenizer = new StringTokenizer(value.toString());
             while (tokenizer.hasMoreTokens()) {
                 context.write(new Text(tokenizer.nextToken()), new IntWritable(1));
             }
@@ -57,53 +53,48 @@ public class CustomInputFormatTest {
     }
 
     @Slf4j
-    private static class WholeFileInputFormat extends FileInputFormat<Text, BytesWritable> {
+    private static class WholeFileInputFormat extends FileInputFormat<Text, Text> {
         @Override
-        protected boolean isSplitable(JobContext context, Path filename) {
+        protected boolean isSplitable(JobContext context, Path file) {
             return false;
         }
 
         @Override
-        public RecordReader<Text, BytesWritable> createRecordReader(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
-            WholeRecordReader reader = new WholeRecordReader();
-            reader.initialize(split, context);
-            return reader;
+        public RecordReader<Text, Text> createRecordReader(InputSplit split, TaskAttemptContext context) {
+            return new WholeFileRecordReader();
         }
 
-        private static class WholeRecordReader extends RecordReader<Text, BytesWritable> {
+        @Slf4j
+        private static class WholeFileRecordReader extends RecordReader<Text, Text> {
 
-            private Configuration configuration;
             private FileSplit split;
-
-            private BytesWritable value = new BytesWritable();
-            private Text key = new Text();
-            private boolean readed = false;
-
+            private FSDataInputStream in;
+            private Text key;
+            private Text value;
+            private boolean hasNext;
 
             @Override
             public void initialize(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
+                LOGGER.info("initialize...");
                 this.split = (FileSplit) split;
-
-                configuration = context.getConfiguration();
+                in = this.split.getPath().getFileSystem(context.getConfiguration()).open(this.split.getPath());
+                hasNext = true;
             }
 
             @Override
             public boolean nextKeyValue() throws IOException, InterruptedException {
-                if (readed) {
+                if (!hasNext) {
                     return false;
                 }
-                try (FSDataInputStream in = split.getPath().getFileSystem(configuration).open(split.getPath());) {
-                    LOGGER.info("path:{},length:{}", split.getPath(), split.getLength());
-                    key.set(split.getPath().toString());
-                    byte[] buff = new byte[(int) split.getLength()];
-                    IOUtils.readFully(in, buff, 0, buff.length);
-                    value.set(buff, 0, buff.length);
-                    readed = true;
-                    return true;
-                } catch (Exception e) {
-                    LOGGER.info("error:{}", e.getMessage(), e);
+                if (key == null) {
+                    key = new Text(split.getPath().toString());
                 }
-                return false;
+                if (value == null) {
+                    value = new Text();
+                    value.readWithKnownLength(in, (int) split.getLength());
+                }
+                hasNext = false;
+                return true;
             }
 
             @Override
@@ -112,7 +103,7 @@ public class CustomInputFormatTest {
             }
 
             @Override
-            public BytesWritable getCurrentValue() throws IOException, InterruptedException {
+            public Text getCurrentValue() throws IOException, InterruptedException {
                 return value;
             }
 
@@ -123,7 +114,8 @@ public class CustomInputFormatTest {
 
             @Override
             public void close() throws IOException {
-
+                LOGGER.info("close...");
+                IOUtils.closeStream(in);
             }
         }
     }
