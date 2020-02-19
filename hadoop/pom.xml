@@ -2,11 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!--    <parent>-->
-    <!--        <groupId>org.springframework.boot</groupId>-->
-    <!--        <artifactId>spring-boot-starter-parent</artifactId>-->
-    <!--        <version>2.2.4.RELEASE</version>-->
-    <!--    </parent>-->
+
     <groupId>com.hiscat</groupId>
     <artifactId>hadoop</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -17,6 +13,10 @@
         <module>kv-input-format</module>
         <module>nline-input-format</module>
         <module>custom-input-format</module>
+        <module>partitioner</module>
+        <module>writable-comparable</module>
+        <module>combiner</module>
+        <module>grouping-comparator</module>
     </modules>
     <packaging>pom</packaging>
     <name>hadoop</name>
