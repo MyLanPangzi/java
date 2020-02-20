@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>custom-output-format</module>
+    </modules>
+    <parent>
+        <artifactId>hadoop</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <groupId>com.hiscat</groupId>
+    </parent>
+    <artifactId>output-format</artifactId>
+    <name>output-format</name>
+    <packaging>pom</packaging>
+    <description>output-format</description>
+
+</project>

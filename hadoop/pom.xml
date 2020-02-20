@@ -7,16 +7,7 @@
     <artifactId>hadoop</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <modules>
-        <module>wordcount</module>
         <module>flowcount</module>
-        <module>combine-text-input-format</module>
-        <module>kv-input-format</module>
-        <module>nline-input-format</module>
-        <module>custom-input-format</module>
-        <module>partitioner</module>
-        <module>writable-comparable</module>
-        <module>combiner</module>
-        <module>grouping-comparator</module>
     </modules>
     <packaging>pom</packaging>
     <name>hadoop</name>
