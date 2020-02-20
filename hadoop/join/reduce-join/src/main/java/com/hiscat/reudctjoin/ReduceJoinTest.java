@@ -70,6 +70,11 @@ public class ReduceJoinTest {
         }
 
         @Override
+        public String toString() {
+            return String.format("%s\t%s\t%s\t", orderId, productName, amount);
+        }
+
+        @Override
         public int compareTo(ReduceJoinTest.OrderBean o) {
             final int compare = this.productId.compareTo(o.productId);
             return compare == 0 ? o.productName.compareTo(this.productName) : compare;
@@ -115,13 +120,14 @@ public class ReduceJoinTest {
 
         @Override
         protected void reduce(OrderBean key, Iterable<NullWritable> values, Context context) throws IOException, InterruptedException {
-            System.out.println(key);
             final Iterator<NullWritable> iterator = values.iterator();
             iterator.next();
-
-            iterator.next();
-            System.out.println(key);
-            System.out.println();
+            final String productName = key.getProductName();
+            while (iterator.hasNext()) {
+                iterator.next();
+                key.setProductName(productName);
+                context.write(key, NullWritable.get());
+            }
         }
 
     }
