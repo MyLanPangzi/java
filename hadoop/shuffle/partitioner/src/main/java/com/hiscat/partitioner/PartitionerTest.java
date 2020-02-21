@@ -20,13 +20,13 @@ public class PartitionerTest {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Job job = Job.getInstance();
 
-        FileInputFormat.addInputPath(job, new Path("E:\\github\\java\\hadoop\\partitioner\\src\\main\\resources\\phone.txt"));
+        FileInputFormat.addInputPath(job, new Path("E:\\github\\java\\hadoop\\shuffle\\partitioner\\src\\main\\resources\\phone.txt"));
         job.setMapperClass(ProvinceMapper.class);
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
         job.setPartitionerClass(ProvincePartitioner.class);
 
-        final Path outputDir = new Path("E:\\github\\java\\hadoop\\partitioner\\src\\main\\resources\\output");
+        final Path outputDir = new Path("E:\\github\\java\\hadoop\\shuffle\\partitioner\\src\\main\\resources\\output");
         outputDir.getFileSystem(job.getConfiguration()).delete(outputDir, true);
         FileOutputFormat.setOutputPath(job, outputDir);
         job.setReducerClass(ProvinceReducer.class);

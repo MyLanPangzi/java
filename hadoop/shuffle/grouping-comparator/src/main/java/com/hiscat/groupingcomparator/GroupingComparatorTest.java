@@ -22,12 +22,12 @@ public class GroupingComparatorTest {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Job job = Job.getInstance();
 
-        FileInputFormat.addInputPath(job, new Path("E:\\github\\java\\hadoop\\grouping-comparator\\src\\main\\resources\\order.txt"));
+        FileInputFormat.addInputPath(job, new Path("E:\\github\\java\\hadoop\\shuffle\\grouping-comparator\\src\\main\\resources\\order.txt"));
         job.setMapperClass(OrderBeanMapper.class);
         job.setMapOutputKeyClass(OrderBean.class);
         job.setMapOutputValueClass(NullWritable.class);
 
-        final Path outputDir = new Path("E:\\github\\java\\hadoop\\grouping-comparator\\src\\main\\resources\\output");
+        final Path outputDir = new Path("E:\\github\\java\\hadoop\\shuffle\\grouping-comparator\\src\\main\\resources\\output");
         FileOutputFormat.setOutputPath(job, outputDir);
         outputDir.getFileSystem(job.getConfiguration()).delete(outputDir, true);
         job.setReducerClass(OrderBeanReducer.class);
