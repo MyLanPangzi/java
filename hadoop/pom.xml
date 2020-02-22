@@ -7,7 +7,17 @@
     <artifactId>hadoop</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <modules>
+        <module>codec</module>
+        <module>etl</module>
         <module>flowcount</module>
+        <module>hadoop-hello</module>
+        <module>input</module>
+        <module>join</module>
+        <module>output</module>
+        <module>shuffle</module>
+        <module>top-n</module>
+        <module>reverse-index</module>
+        <module>freinds</module>
     </modules>
     <packaging>pom</packaging>
     <name>hadoop</name>
