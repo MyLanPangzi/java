@@ -5,7 +5,6 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
@@ -26,7 +25,7 @@ public class FindFriendsTest {
         final Path outputDir = new Path("E:\\github\\java\\hadoop\\friends\\src\\main\\resources\\output");
         outputDir.getFileSystem(job.getConfiguration()).delete(outputDir, true);
         FileOutputFormat.setOutputPath(job, outputDir);
-        job.setReducerClass(FindFriendsReducer.class);
+        job.setReducerClass(FriendReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
@@ -51,14 +50,5 @@ public class FindFriendsTest {
         }
     }
 
-    private static class FindFriendsReducer extends Reducer<Text, Text, Text, Text> {
-        @Override
-        protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            StringBuilder result = new StringBuilder();
-            for (Text value : values) {
-                result.append(value.toString()).append(",");
-            }
-            context.write(key, new Text(result.substring(0, result.length() - 1)));
-        }
-    }
+
 }
