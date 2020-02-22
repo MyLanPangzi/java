@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>freinds</artifactId>
+    <artifactId>friends</artifactId>
     <dependencies>
         <dependency>
             <groupId>ch.qos.logback</groupId>

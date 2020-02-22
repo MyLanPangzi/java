@@ -17,7 +17,7 @@
         <module>shuffle</module>
         <module>top-n</module>
         <module>reverse-index</module>
-        <module>freinds</module>
+        <module>friends</module>
     </modules>
     <packaging>pom</packaging>
     <name>hadoop</name>
