@@ -7,6 +7,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.MRJobConfig;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -23,17 +24,16 @@ import java.io.IOException;
 public class FlowCount {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Job job = Job.getInstance();
+        job.getConfiguration().set(MRJobConfig.QUEUE_NAME, "hive");
 
         //in
-//        LOGGER.info("in:{}", args[0]);
-        FileInputFormat.addInputPath(job, new Path("E:\\github\\java\\hadoop\\flowcount\\src\\main\\resources\\phone.txt"));
+        FileInputFormat.addInputPath(job, new Path(args[0]));
         job.setMapperClass(FlowCountMapper.class);
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(FlowBean.class);
 
         //out
-//        LOGGER.info("out:{}", args[1]);
-        FileOutputFormat.setOutputPath(job, new Path("E:\\github\\java\\hadoop\\flowcount\\src\\main\\resources\\output"));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
         job.setReducerClass(FlowCountReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(FlowBean.class);
