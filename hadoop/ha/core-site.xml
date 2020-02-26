@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+    <!-- 指定HDFS中NameNode的地址 -->
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://mycluster</value>
+    </property>
+    <!-- 指定Hadoop运行时产生文件的存储目录 -->
+    <property>
+        <name>hadoop.tmp.dir</name>
+        <value>/opt/ha/hadoop-2.10.0/data/tmp</value>
+    </property>
+
+    <property>
+        <name>dfs.journalnode.edits.dir</name>
+        <value>/opt/ha/hadoop-2.10.0/data/tmp/jn</value>
+    </property>
+    <property>
+        <name>ha.zookeeper.quorum</name>
+        <value>
+            hadoop100:2181,hadoop101:2181,hadoop102:2181,hadoop103:2181,hadoop104:2181,hadoop105:2181,hadoop106:2181
+        </value>
+    </property>
+</configuration>
