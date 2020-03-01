@@ -62,6 +62,29 @@ create table business
     orderdate string,
     cost      int
 ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',';
+create table if not exists t(
+                                id int,
+                                ti tinyint,
+                                si smallint,
+                                bi bigint,
+                                f float,
+                                d double,
+                                dec decimal(9,1),
+                                s string,
+                                v varchar(20),
+                                cchar char(2),
+                                cbool boolean,
+                                t timestamp,
+                                cdate date,
+--     cinterval interval,
+                                carr array<string>,
+                                cmap map<string, string>,
+                                cstruct struct<name: string, gender: string>,
+                                cunion uniontype<string, int>
+)
+    row format delimited
+        collection items terminated by ','
+        map keys terminated by ':';
 
 load data local inpath "/opt/module/data/business.txt" into table business;
 
@@ -71,28 +94,64 @@ truncate table human;
 select concat(blood, '|', xingzuo), concat_ws('|', collect_set(name))
 from human
 group by concat(blood, '|', xingzuo);
+insert into t(id, ti, si, bi, f, d, dec, s, v, cchar, cbool, t, cdate, carr, cmap, cstruct, cunion)
+select  1,2,3,4,5,6.0,7.0,'s','varchar','char',true,unix_timestamp(),
+        '2020-03-01',array('a','b'),map('a','b'), named_struct('name','hello','gender', 'f'), create_union(0, '1', 1)
+from business limit 1;
 select name, c
 from movie LATERAL VIEW explode(split(category, ',')) m as c;
 
 -- （1） 查询在2017年4月份购买过的顾客及总人数
-select name,count(*) over() from business where month(orderdate) = 4 group by name;
--- select name,count(*)  from business where month(orderdate) = 4 group by name;
+select name,count(*) over() c
+from business
+where month(orderdate) = 4
+group by name
+WINDOW w AS ();
 --     （2） 查询顾客的购买明细及月购买总额
-select *,sum(cost) over(partition by month(orderdate),name) from business;
---     查询每个客户的购买明细以及月购买额
-select *,sum(cost) over(partition by month(orderdate)) from business;
+select *,sum(cost) over w
+from business
+window w as (distribute by name);
 --     （3） 上述的场景,要将cost按照日期进行累加
-select *,sum(cost) over(order by orderdate) from business;
+select *,sum(cost) over w
+from business
+window w as (distribute by name sort by orderdate);
+
+-- 3. 窗口函数:
+--    扩展需求三:
+--     当前行和上一行
+select *,sum(cost) over w
+from business
+window w as (distribute by name sort by orderdate rows between 1 preceding and current row);
+--     当前行和下一行
+select *,sum(cost) over w
+from business
+window w as (distribute by name sort by orderdate rows between current row and 1 following);
+--     当前行和上一行及下一行
+select *,sum(cost) over w
+from business
+window w as (distribute by name sort by orderdate rows between 1 preceding and 1 following);
+--     当前行和网上第2行 及  往下第2行
+select *,t.cur + t.pre2 + t.next2 from (
+                  select *,
+                         lag(cost, 0, 0) over w cur,
+                         lag(cost, 2, 0) over w pre2,
+                         lead(cost, 2, 0) over w next2
+                  from business
+                      window w as (order by orderdate)
+                  ) t;
+
 --     （4） 查询顾客上次的购买时间
-select *,lag(orderdate,1,'1900-01-01') over(partition by name order by orderdate ) as time1 from business;
-
 select *,
-       sum(cost) over() as overall,--所有行相加
-       sum(cost) over(partition by name) as myname,--按name分组，组内数据相加
-       sum(cost) over(partition by name order by orderdate) as acc_by_date,--按name分组，组内数据累加
-       sum(cost) over(partition by name order by orderdate rows between UNBOUNDED PRECEDING and current row ) as start_cur ,--和sample3一样,由起点到当前行的聚合
-       sum(cost) over(partition by name order by orderdate rows between 1 PRECEDING and current row) as pre_cur, --当前行和前面一行做聚合
-       sum(cost) over(partition by name order by orderdate rows between 1 PRECEDING AND 1 FOLLOWING ) as pre_cur_next,--当前行和前边一行及后面一行
-       sum(cost) over(partition by name order by orderdate rows between current row and UNBOUNDED FOLLOWING ) as cur_end --当前行及后面所有行
-from business;
-
+       first_value(orderdate) over w first,
+       last_value(orderdate) over w last,
+       lag(orderdate,1) over w pre,
+       lead(orderdate,1) over w next
+from business
+window w as (distribute by name sort by orderdate);
+--     （5） 查询前20%时间的订单信息
+select *
+from (select *, ntile(5) over w line
+      from business
+          window w as (order by orderdate)
+) t
+where t.line = 1;
