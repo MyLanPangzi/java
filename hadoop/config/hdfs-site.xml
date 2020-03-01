@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+	<property>
+		<name>dfs.namenode.name.dir</name>
+		<value>file:///${hadoop.tmp.dir}/dfs/name1,file:///${hadoop.tmp.dir}/dfs/name2</value>
+	</property>
+	    <!-- 指定HDFS副本的数量 -->
+    	<property>
+        	<name>dfs.replication</name>
+        	<value>3</value>
+	</property>
+	    <!-- 指定Hadoop辅助名称节点主机配置 -->
+	<property>
+		<name>dfs.namenode.secondary.http-address</name>
+	  	 <value>hadoop102:50090</value>
+	</property>
+	<property>
+	        <name>dfs.datanode.data.dir</name>
+		<value>file:///${hadoop.tmp.dir}/dfs/data1,file:///${hadoop.tmp.dir}/dfs/data2</value>
+	</property>
+</configuration>

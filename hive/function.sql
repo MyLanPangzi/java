@@ -85,9 +85,7 @@ create table if not exists t(
     row format delimited
         collection items terminated by ','
         map keys terminated by ':';
-
 load data local inpath "/opt/module/data/business.txt" into table business;
-
 load data local inpath '/opt/module/data/human.txt' into table human;
 load data local inpath '/opt/module/data/movies.txt' into table movie;
 truncate table human;
