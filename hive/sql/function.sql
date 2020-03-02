@@ -129,14 +129,15 @@ select *,sum(cost) over w
 from business
 window w as (distribute by name sort by orderdate rows between 1 preceding and 1 following);
 --     当前行和网上第2行 及  往下第2行
-select *,t.cur + t.pre2 + t.next2 from (
-                  select *,
-                         lag(cost, 0, 0) over w cur,
-                         lag(cost, 2, 0) over w pre2,
-                         lead(cost, 2, 0) over w next2
-                  from business
-                      window w as (order by orderdate)
-                  ) t;
+select *,
+       cost +
+       lag(cost, 2, 0) over w  +
+       lead(cost, 2, 0) over w
+from business
+    window w as (order by orderdate);
+select *,datediff(orderdate, lag(orderdate, 1,'1900-01-01') over w)
+from business
+    window w as (order by orderdate);
 
 --     （4） 查询顾客上次的购买时间
 select *,
@@ -153,3 +154,4 @@ from (select *, ntile(5) over w line
           window w as (order by orderdate)
 ) t
 where t.line = 1;
+

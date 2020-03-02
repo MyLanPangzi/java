@@ -19,3 +19,7 @@ select *,
        dense_rank() over w --组内编号，同值不留空号
 from test_rank
     window w as (order by b);
+select *,
+       lag(a,1) over(order by b),
+       sum(b) over (range between 1 preceding and 1 following)
+from test_rank;
