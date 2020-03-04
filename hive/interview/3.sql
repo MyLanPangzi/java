@@ -30,14 +30,14 @@ from user_low_carbon;
 -- 剩余能量/沙柳能量
 -- 然后倒序排序
 -- 开窗，计算下一名的差距
-select *, t.plant_count - lead(t.plant_count, 1, 0) over (order by plant_count desc )
+select *, t.plant_count - lead(t.plant_count, 1) over (order by plant_count desc )
 from (select u.user_id, floor((u.total_low_carbon - p004.low_carbon) / p002.low_carbon) plant_count
       from (select user_id, sum(low_carbon) total_low_carbon
             from user_low_carbon
             where to_date(regexp_replace(data_dt, '/', '-')) between to_date('2017-01-01') and to_date('2017-10-01')
-            group by user_id) u
-               join (select * from plant_carbon where plant_id = 'p004') p004
-               join (select * from plant_carbon where plant_id = 'p002') p002
+            group by user_id ) u
+               join (select low_carbon from plant_carbon where plant_id = 'p004') p004
+               join (select low_carbon from plant_carbon where plant_id = 'p002') p002
       order by plant_count desc
       limit 10) t;
 
@@ -57,36 +57,29 @@ from (select u.user_id, floor((u.total_low_carbon - p004.low_carbon) / p002.low_
 -- 先合计每天的能量,过滤掉低于100的天数
 -- 显示昨天,今天,明天
 -- 过滤掉没有昨天+1不等于今天,明天减一不等于今天的数据
-select *
-from (select t.user_id,
-             t.low_carbon,
-             t.data_dt,
-             sum(low_carbon)
-                 over (partition by t.user_id,t.data_dt order by t.data_dt) low_carbon_sum
-      from (select u.user_id,
-                   to_date(regexp_replace(u.data_dt, '/', '-')) data_dt,
-                   u.low_carbon
-            from user_low_carbon u) t
-      where year(to_date(regexp_replace(data_dt, '/', '-'))) = 2017) t
-where t.low_carbon_sum > 100;
-select *
-from user_low_carbon u
-join (select *
-      from (select t.user_id,
-                   t.data_dt,
-                   lag(t.data_dt,1) over (partition by user_id order by t.data_dt) pre,
-                   lag(t.data_dt,2) over (partition by user_id order by t.data_dt) pre2,
-                   lead(t.data_dt,1) over (partition by user_id order by t.data_dt) next,
-                   lead(t.data_dt,2) over (partition by user_id order by t.data_dt) next2,
-                   sum(low_carbon) low_carbon_sum
-            from (select u.user_id,
-                         to_date(regexp_replace(u.data_dt, '/', '-')) data_dt,
-                         u.low_carbon
-                  from user_low_carbon u) t
-            where year(to_date(regexp_replace(data_dt, '/', '-'))) = 2017
-            group by t.user_id, t.data_dt
-            having low_carbon_sum > 100) t
-      where (date_add(t.pre,1) = t.data_dt and date_add(t.data_dt,1) = t.next)
-         or (date_add(t.data_dt, -1) = t.pre and date_add(t.data_dt, -2) = t.pre2)
-         or (date_add(t.data_dt,1) = t.next and date_add(t.data_dt,2) = t.next2)) t on u.user_id = t.user_id where t.data_dt = u.data_dt;
+select t.user_id, t.data_dt, u.low_carbon
+from (select u.user_id,
+             to_date(regexp_replace(u.data_dt, '/', '-')) data_dt,
+             u.low_carbon
+      from user_low_carbon u) u
+         join (select *
+               from (select t.user_id,
+                            t.data_dt,
+                            lag(t.data_dt, 1) over (partition by user_id order by t.data_dt)  pre,
+                            lag(t.data_dt, 2) over (partition by user_id order by t.data_dt)  pre2,
+                            lead(t.data_dt, 1) over (partition by user_id order by t.data_dt) next,
+                            lead(t.data_dt, 2) over (partition by user_id order by t.data_dt) next2,
+                            sum(low_carbon)                                                   low_carbon_sum
+                     from (select u.user_id,
+                                  to_date(regexp_replace(u.data_dt, '/', '-')) data_dt,
+                                  u.low_carbon
+                           from user_low_carbon u) t
+                     where year(to_date(regexp_replace(data_dt, '/', '-'))) = 2017
+                     group by t.user_id, t.data_dt
+                     having low_carbon_sum > 100) t
+               where (date_add(t.pre, 1) = t.data_dt and date_add(t.data_dt, 1) = t.next)
+                  or (date_add(t.data_dt, -1) = t.pre and date_add(t.data_dt, -2) = t.pre2)
+                  or (date_add(t.data_dt, 1) = t.next and date_add(t.data_dt, 2) = t.next2)) t
+              on u.user_id = t.user_id and u.data_dt = t.data_dt;
+;
 
