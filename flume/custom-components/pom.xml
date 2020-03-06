@@ -11,6 +11,11 @@
 
     <artifactId>custom-components</artifactId>
     <dependencies>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.flume/flume-ng-core -->
         <dependency>
             <groupId>org.apache.flume</groupId>
