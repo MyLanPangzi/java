@@ -40,7 +40,7 @@
                         </goals>
                         <configuration>
                             <fromFile>target/${project.build.finalName}.${project.packaging}</fromFile>
-                            <url>scp://atguigu:Xiebo0409@hadoop100:/opt/module/apache-flume-1.9.0-bin/lib</url>
+                            <url>scp://atguigu:Xiebo0409@hadoop104:/opt/module/apache-flume-1.9.0-bin/lib</url>
                         </configuration>
                     </execution>
                 </executions>

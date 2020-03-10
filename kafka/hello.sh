@@ -2,13 +2,12 @@
 kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test
 kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic topic1.DLT.DLT
 kafka-topics.sh --list --bootstrap-server localhost:9092
-kafka-topics.sh --describe --bootstrap-server localhost:9092 --topic topic1
-kafka-topics.sh --describe --bootstrap-server localhost:9092 --topic topic1
+kafka-topics.sh --describe --bootstrap-server localhost:9092 --topic hello
+kafka-topics.sh --alter --bootstrap-server localhost:9092 --topic my-topic --partitions 3
 
 kafka-console-producer.sh --broker-list localhost:9092 --topic my-topic
-kafka-console-producer.sh --broker-list localhost:9092 --topic topic1.DLT
-kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic topic1 --from-beginning
-kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic topic1.DLT --from-beginning
+
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic flume --from-beginning
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic my-topic \
 --consumer.config config/consumer.properties \
 --from-beginning
