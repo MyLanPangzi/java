@@ -28,7 +28,7 @@ class KafkaTest {
 //        props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, "com.hiscat.kafka.partitioner.EvenOddPartitioner");
 
         Producer<String, String> producer = new KafkaProducer<>(props);
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10000; i++) {
 //            producer.send(new ProducerRecord<String, String>("my-topic",  Integer.toString(i)));
 //            producer.send(new ProducerRecord<String, String>("my-topic", Integer.toString(i), Integer.toString(i)));
 //            producer.send(new ProducerRecord<String, String>("my-topic", 0, Integer.toString(i), Integer.toString(i)));

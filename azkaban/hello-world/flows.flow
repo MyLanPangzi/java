@@ -1,0 +1,23 @@
+nodes:
+  - name: jobA
+    type: command
+    config:
+      command: sh -c "echo a >> /opt/module/data/azkaban/a"
+  - name: jobB
+    type: command
+    config:
+      command:  sh -c  "echo b >> /opt/module/data/azkaban/b"
+    dependsOn:
+      - jobA
+  - name: jobC
+    type: command
+    config:
+      command: sh -c "echo c >> /opt/module/data/azkaban/c"
+    dependsOn:
+      - jobB
+  - name: jobD
+    type: command
+    config:
+      command: sh -c "echo d >> /opt/module/data/azkaban/d"
+    dependsOn:
+      - jobB

@@ -1,0 +1,5 @@
+nodes:
+  - name: put-file
+    type: command
+    config:
+      command: hdfs dfs -put /opt/module/data/1.txt /
