@@ -1,8 +1,5 @@
 nodes:
-  - name: load-insert
-    type: hive
+  - name: put-file
+    type: command
     config:
-      azk.hive.action: execute.query
-      hive.query: use default;
-#      command: echo hello
-#      command: /opt/module/hive/bin/hive -f /opt/module/hive/sql/student.sql
+      command: hive -f /opt/module/hive/sql/student.sql

@@ -1,7 +1,0 @@
-nodes:
-  - name: java
-    type: java
-    config:
-      java.class: com.hiscat.azkaban.hello.HelloTest
-      classpath: /opt/module/azkaban-3.84.0/azkaban-solo-server/build/install/azkaban-solo-server/lib/*
-
