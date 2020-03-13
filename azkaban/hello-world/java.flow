@@ -1,0 +1,6 @@
+nodes:
+  - name: java
+    type: java
+    config:
+      job.class: com.hiscat.azkaban.hello.HelloTest
+      classpath: lib/*
