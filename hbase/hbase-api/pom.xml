@@ -58,6 +58,47 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.hiscat.hbase.api.FruitMR</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>upload-single</goal>
+                        </goals>
+                        <configuration>
+                            <fromFile>target/${project.build.finalName}-jar-with-dependencies.${project.packaging}</fromFile>
+                            <url>scp://atguigu:Xiebo0409@hadoop104:/opt/module/hbase-1.4.13/lib</url>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

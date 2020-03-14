@@ -15,6 +15,8 @@
     <description>hbase</description>
 
     <properties>
+        <wagon-maven-plugin>2.0.0</wagon-maven-plugin>
+        <wagon-ssh.version>3.3.4</wagon-ssh.version>
         <java.version>1.8</java.version>
         <hbase.version>1.4.13</hbase.version>
         <hadoop.version>2.10.0</hadoop.version>
@@ -25,11 +27,23 @@
         <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
     </properties>
     <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>${wagon-ssh.version}</version>
+            </extension>
+        </extensions>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>${maven-assembly-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>wagon-maven-plugin</artifactId>
+                    <version>${wagon-maven-plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

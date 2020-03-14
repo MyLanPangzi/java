@@ -1,17 +1,22 @@
 package com.hiscat.hbase.api;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.filter.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.hadoop.hbase.client.ConnectionFactory.createConnection;
+import static org.apache.hadoop.hbase.filter.CompareFilter.CompareOp.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ApiTestTest {
@@ -87,12 +92,19 @@ class ApiTestTest {
         }
     }
 
+
     @Test
     void testAddData() throws IOException {
-        final Table table = connection.getTable(tableName);
-        if (admin.tableExists(table.getName())) {
-            table.put(new Put("1".getBytes()).addColumn("info".getBytes(), "name".getBytes(), "world".getBytes()));
-            table.put(new Put("1".getBytes()).addColumn("info".getBytes(), "sex".getBytes(), "m".getBytes()));
+        for (int i = 0; i < 100; i++) {
+            final byte[] rowKey = Bytes.toBytes(RandomUtils.nextInt(1000, 100000) + "");
+            final byte[] cf = "info".getBytes();
+            final Put name = new Put(rowKey).addColumn(cf, "name".getBytes(), RandomStringUtils.random(10, true, true).getBytes());
+            final Put sex = new Put(rowKey).addColumn(cf, "sex".getBytes(), RandomStringUtils.random(1, "mf").getBytes());
+            final Put height = new Put(rowKey).addColumn(cf, "height".getBytes(), Bytes.toBytes(RandomUtils.nextInt(140, 200) + ""));
+            final Put weight = new Put(rowKey).addColumn(cf, "weight".getBytes(), Bytes.toBytes(RandomUtils.nextInt(40, 100) + ""));
+            final Put birthday = new Put(rowKey).addColumn(cf, "birthday".getBytes(),
+                    LocalDate.of(RandomUtils.nextInt(1990, 2000), RandomUtils.nextInt(1, 13), RandomUtils.nextInt(1, 29)).toString().getBytes());
+            hiscat.put(Arrays.asList(name, sex, height, weight, birthday));
         }
     }
 
@@ -115,6 +127,36 @@ class ApiTestTest {
             System.out.println(Bytes.toString(CellUtil.cloneQualifier(cell)));
             System.out.println(Bytes.toString(CellUtil.cloneValue(cell)));
         }));
+        scanner.close();
+    }
+
+    @Test
+    void testFilter() throws IOException {
+//        final Scan scan = new Scan().setFilter(new SingleColumnValueFilter("info".getBytes(),
+//                "sex".getBytes(), CompareFilter.CompareOp.EQUAL, "m".getBytes()));
+        final byte[] cf = "info".getBytes();
+        final byte[] height = "height".getBytes();
+        final byte[] weight = "weight".getBytes();
+        FilterList filterList = new FilterList(
+                new SingleColumnValueFilter(cf, "sex".getBytes(), EQUAL, "f".getBytes()),
+                new SingleColumnValueFilter(cf, "birthday".getBytes(), GREATER_OR_EQUAL, new BinaryComparator("1993".getBytes())),
+                new SingleColumnValueFilter(cf, height, GREATER_OR_EQUAL, new BinaryComparator("160".getBytes())),
+                new SingleColumnValueFilter(cf, height, LESS_OR_EQUAL, new BinaryComparator("170".getBytes())),
+                new SingleColumnValueFilter(cf, weight, GREATER, new BinaryComparator("40".getBytes())),
+                new SingleColumnValueFilter(cf, weight, LESS, new BinaryComparator("60".getBytes()))
+//                new RowFilter(EQUAL, new SubstringComparator("8"))
+        );
+        final Scan scan = new Scan().setFilter(filterList);
+        final ResultScanner scanner = hiscat.getScanner(scan);
+        scanner.forEach(r -> Arrays.stream(r.rawCells()).forEach(cell -> {
+            System.out.printf("row:%s,cf:%s,col:%s,val:%s\n",
+                    Bytes.toString(CellUtil.cloneRow(cell)),
+                    Bytes.toString(CellUtil.cloneFamily(cell)),
+                    Bytes.toString(CellUtil.cloneQualifier(cell)),
+                    Bytes.toString(CellUtil.cloneValue(cell))
+            );
+        }));
+        scanner.close();
     }
 
     @Test
