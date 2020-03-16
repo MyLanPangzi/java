@@ -21,12 +21,6 @@
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-server</artifactId>
             <version>${hbase.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.hadoop</groupId>
-                    <artifactId>hadoop-common</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -66,7 +60,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.hiscat.hbase.api.FruitMR</mainClass>
+                            <mainClass>com.hiscat.hbase.api.HbaseWriteFileMR</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

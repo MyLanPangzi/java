@@ -12,7 +12,6 @@ import org.apache.hadoop.hbase.mapreduce.TableReducer;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.MRJobConfig;
 
 import java.io.IOException;
 
@@ -22,8 +21,6 @@ import java.io.IOException;
 public class FruitMR {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Job job = Job.getInstance();
-        job.getConfiguration().set(MRJobConfig.QUEUE_NAME, "hive");
-
         Scan scan = new Scan();
         scan.setCacheBlocks(false);
         scan.setCaching(500);

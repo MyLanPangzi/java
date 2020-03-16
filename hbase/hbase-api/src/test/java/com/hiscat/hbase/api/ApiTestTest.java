@@ -5,15 +5,15 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
-import org.apache.hadoop.hbase.filter.*;
+import org.apache.hadoop.hbase.filter.BinaryComparator;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.apache.hadoop.hbase.client.ConnectionFactory.createConnection;
 import static org.apache.hadoop.hbase.filter.CompareFilter.CompareOp.*;
@@ -96,7 +96,7 @@ class ApiTestTest {
     @Test
     void testAddData() throws IOException {
         for (int i = 0; i < 100; i++) {
-            final byte[] rowKey = Bytes.toBytes(RandomUtils.nextInt(1000, 100000) + "");
+            final byte[] rowKey = Bytes.toBytes(i + "");
             final byte[] cf = "info".getBytes();
             final Put name = new Put(rowKey).addColumn(cf, "name".getBytes(), RandomStringUtils.random(10, true, true).getBytes());
             final Put sex = new Put(rowKey).addColumn(cf, "sex".getBytes(), RandomStringUtils.random(1, "mf").getBytes());
@@ -110,12 +110,19 @@ class ApiTestTest {
 
     @Test
     void testDeleteData() throws IOException {
-        final Delete name = new Delete("1".getBytes()).addColumn("info".getBytes(), "name".getBytes());
-        final Delete sex = new Delete("1".getBytes()).addColumn("info".getBytes(), "sex".getBytes());
-        List<Delete> deletes = new ArrayList<>();
-        deletes.add(name);
-        deletes.add(sex);
-        hiscat.delete(deletes);
+        final byte[] cf = "info".getBytes();
+        hiscat.delete(new Delete("98".getBytes()).addFamily(cf, System.currentTimeMillis()));
+        hiscat.delete(new Delete("97".getBytes()).addFamily(cf));
+        hiscat.delete(new Delete("96".getBytes()).addFamilyVersion(cf, 1584165650054L));
+        //删除列，所有数据无效
+        hiscat.delete(new Delete("99".getBytes()).addColumns(cf, "weight".getBytes()));
+        //删除列，指定版本及以后的数据无效
+        hiscat.delete(new Delete("99".getBytes()).addColumns(cf, "sex".getBytes(), 1584165650069L));
+
+        //标记最新一条数据无效，后面一条会生效，被查出来
+        hiscat.delete(new Delete("99".getBytes()).addColumn(cf, "name".getBytes()));
+        //标记指定版本数据无效，后面一条会生效，被查出来
+        hiscat.delete(new Delete("99".getBytes()).addColumn(cf, "name".getBytes(), 1584165650069L));
     }
 
     @Test
