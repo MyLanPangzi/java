@@ -5,6 +5,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.exceptions.DeserializationException;
 import org.apache.hadoop.hbase.filter.BinaryComparator;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
@@ -27,7 +28,7 @@ class ApiTestTest {
     private Table hiscat;
 
     @BeforeAll
-    static void setup() throws IOException {
+    static void setup() throws IOException, DeserializationException {
         Configuration conf = HBaseConfiguration.create();
         conf.set("hbase.zookeeper.quorum", "hadoop104,hadoop105,hadoop106");
         connection = createConnection(conf);
@@ -82,6 +83,13 @@ class ApiTestTest {
         }
     }
 
+    @Test
+    void testCoprocessor() throws IOException {
+        final HTableDescriptor desc = new HTableDescriptor(TableName.valueOf("coprocessor"));
+        desc.addCoprocessor("com.hiscat.coprocessor.FruitCoprocessor");
+        desc.addFamily(new HColumnDescriptor("info"));
+        admin.createTable(desc);
+    }
     @Test
     void testDeleteTable() throws IOException {
         if (admin.tableExists(tableName)) {
