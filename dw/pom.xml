@@ -11,8 +11,10 @@
     <modules>
         <module>log-collector</module>
         <module>flume-interceptor</module>
+        <module>udtf</module>
     </modules>
     <properties>
+        <hive.version>2.3.0</hive.version>
         <flume.version>1.7.0</flume.version>
         <slf4j.version>1.7.20</slf4j.version>
         <logback.version>1.0.7</logback.version>
@@ -30,6 +32,12 @@
     <dependencyManagement>
 
         <dependencies>
+            <!--添加hive依赖-->
+            <dependency>
+                <groupId>org.apache.hive</groupId>
+                <artifactId>hive-exec</artifactId>
+                <version>${hive.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.flume</groupId>
                 <artifactId>flume-ng-core</artifactId>
@@ -88,4 +96,10 @@
             </plugins>
         </pluginManagement>
     </build>
+    <repositories>
+        <repository>
+            <id>spring-plugin</id>
+            <url>https://repo.spring.io/plugins-release/</url>
+        </repository>
+    </repositories>
 </project>
