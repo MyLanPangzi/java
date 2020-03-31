@@ -23,7 +23,7 @@ create external table if not exists dws_uv_detail_daycount
     partitioned by (dt string)
     stored as parquet
     location '/warehouse/gmall/dws/dws_uv_detail_daycount';
-insert overwrite table dws_uv_detail_daycount partition (dt = '2020-03-10')
+insert overwrite table dws_uv_detail_daycount partition (dt = '2020-03-12')
 select mid_id,
        concat_ws('|', collect_set(mid_id))       user_id,
        concat_ws('|', collect_set(user_id))      version_code,
@@ -43,7 +43,7 @@ select mid_id,
        concat_ws('|', collect_set(lng))          lat,
        count(*)
 from dwd_start_log log
-where dt = '2020-03-10'
+where dt = '2020-03-12'
 group by mid_id;
 drop table if exists dws_user_action_daycount;
 create external table dws_user_action_daycount
@@ -408,7 +408,47 @@ from (
          from dwd_dim_sku_info
          where dt = '2020-03-10'
      ) si on op.sku_id = si.id;
-
+drop table if exists dws_coupon_use_daycount;
+create external table dws_coupon_use_daycount
+(
+    `coupon_id`        string COMMENT '优惠券ID',
+    `coupon_name`      string COMMENT '购物券名称',
+    `coupon_type`      string COMMENT '购物券类型 1 现金券 2 折扣券 3 满减券 4 满件打折券',
+    `condition_amount` string COMMENT '满额数',
+    `condition_num`    string COMMENT '满件数',
+    `activity_id`      string COMMENT '活动编号',
+    `benefit_amount`   string COMMENT '减金额',
+    `benefit_discount` string COMMENT '折扣',
+    `create_time`      string COMMENT '创建时间',
+    `range_type`       string COMMENT '范围类型 1、商品 2、品类 3、品牌',
+    `spu_id`           string COMMENT '商品id',
+    `tm_id`            string COMMENT '品牌id',
+    `category3_id`     string COMMENT '品类id',
+    `limit_num`        string COMMENT '最多领用次数',
+    `get_count`        bigint COMMENT '领用次数',
+    `using_count`      bigint COMMENT '使用(下单)次数',
+    `used_count`       bigint COMMENT '使用(支付)次数'
+) COMMENT '每日优惠券统计'
+    PARTITIONED BY (`dt` string)
+    stored as parquet
+    location '/warehouse/gmall/dws/dws_coupon_use_daycount/'
+    tblproperties ("parquet.compression" = "lzo");
+drop table if exists dws_activity_info_daycount;
+create external table dws_activity_info_daycount
+(
+    `id`            string COMMENT '编号',
+    `activity_name` string COMMENT '活动名称',
+    `activity_type` string COMMENT '活动类型',
+    `start_time`    string COMMENT '开始时间',
+    `end_time`      string COMMENT '结束时间',
+    `create_time`   string COMMENT '创建时间',
+    `order_count`   bigint COMMENT '下单次数',
+    `payment_count` bigint COMMENT '支付次数'
+) COMMENT '购物车信息表'
+    PARTITIONED BY (`dt` string)
+    row format delimited fields terminated by '\t'
+    location '/warehouse/gmall/dws/dws_activity_info_daycount/'
+    tblproperties ("parquet.compression" = "lzo");
 drop table if exists dws_uv_topic;
 create external table if not exists dws_uv_topic
 (
@@ -716,3 +756,30 @@ from (
      on new.sku_id = old.sku_id
          left join dwd_dim_sku_info
                    on new.sku_id = dwd_dim_sku_info.id;
+drop table if exists dwt_coupon_topic;
+create external table dwt_coupon_topic
+(
+    `coupon_id`       string COMMENT '优惠券ID',
+    `get_day_count`   bigint COMMENT '当日领用次数',
+    `using_day_count` bigint COMMENT '当日使用(下单)次数',
+    `used_day_count`  bigint COMMENT '当日使用(支付)次数',
+    `get_count`       bigint COMMENT '累积领用次数',
+    `using_count`     bigint COMMENT '累积使用(下单)次数',
+    `used_count`      bigint COMMENT '累积使用(支付)次数'
+) COMMENT '购物券主题宽表'
+    stored as parquet
+    location '/warehouse/gmall/dwt/dwt_coupon_topic/'
+    tblproperties ("parquet.compression" = "lzo");
+drop table if exists dwt_activity_topic;
+create external table dwt_activity_topic
+(
+    `id`                string COMMENT '活动id',
+    `activity_name`     string COMMENT '活动名称',
+    `order_day_count`   bigint COMMENT '当日日下单次数',
+    `payment_day_count` bigint COMMENT '当日支付次数',
+    `order_count`       bigint COMMENT '累积下单次数',
+    `payment_count`     bigint COMMENT '累积支付次数'
+) COMMENT '活动主题宽表'
+    row format delimited fields terminated by '\t'
+    location '/warehouse/gmall/dwt/dwt_activity_topic/'
+    tblproperties ("parquet.compression" = "lzo");
