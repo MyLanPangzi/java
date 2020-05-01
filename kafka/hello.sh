@@ -9,6 +9,10 @@ kafka-topics.sh --zookeeper hadoop102:2181 --list
 kafka-topics.sh --zookeeper hadoop102:2181 --describe --topic topic_start
 kafka-topics.sh --describe --bootstrap-server localhost:9092 --topic hello
 kafka-topics.sh --alter --bootstrap-server localhost:9092 --topic my-topic --partitions 3
+kafka-topics.sh --alter --bootstrap-server localhost:9092 --topic my-topic --partitions 3
+
+kafka-console-producer.bat --bootstrap-server localhost:9092 --topic test
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test
 
 kafka-console-producer.sh --broker-list localhost:9092 --topic my-topic
 
