@@ -2,20 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/tut-spring-security-and-angular-js/basic/basic.iml" filepath="$PROJECT_DIR$/tut-spring-security-and-angular-js/basic/basic.iml" group="tut-spring-security-and-angular-js and modules" />
-      <module fileurl="file://$PROJECT_DIR$/jvm/chapter1/chapter1.iml" filepath="$PROJECT_DIR$/jvm/chapter1/chapter1.iml" />
-      <module fileurl="file://$PROJECT_DIR$/jvm/chapter2/chapter2.iml" filepath="$PROJECT_DIR$/jvm/chapter2/chapter2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/jvm/chapter4/chapter4.iml" filepath="$PROJECT_DIR$/jvm/chapter4/chapter4.iml" />
-      <module fileurl="file://$PROJECT_DIR$/jvm/chapter5/chapter5.iml" filepath="$PROJECT_DIR$/jvm/chapter5/chapter5.iml" />
-      <module fileurl="file://$PROJECT_DIR$/tut-spring-security-and-angular-js/double/admin/double-admin.iml" filepath="$PROJECT_DIR$/tut-spring-security-and-angular-js/double/admin/double-admin.iml" group="tut-spring-security-and-angular-js and modules/pairs-double and modules" />
-      <module fileurl="file://$PROJECT_DIR$/tut-spring-security-and-angular-js/double/gateway/double-gateway.iml" filepath="$PROJECT_DIR$/tut-spring-security-and-angular-js/double/gateway/double-gateway.iml" group="tut-spring-security-and-angular-js and modules/pairs-double and modules" />
-      <module fileurl="file://$PROJECT_DIR$/tut-spring-security-and-angular-js/double/resource/double-resource.iml" filepath="$PROJECT_DIR$/tut-spring-security-and-angular-js/double/resource/double-resource.iml" group="tut-spring-security-and-angular-js and modules/pairs-double and modules" />
-      <module fileurl="file://$PROJECT_DIR$/tut-spring-security-and-angular-js/double/ui/double-ui.iml" filepath="$PROJECT_DIR$/tut-spring-security-and-angular-js/double/ui/double-ui.iml" group="tut-spring-security-and-angular-js and modules/pairs-double and modules" />
       <module fileurl="file://$PROJECT_DIR$/.idea/java.iml" filepath="$PROJECT_DIR$/.idea/java.iml" />
-      <module fileurl="file://$PROJECT_DIR$/hadoop/kv-input-format/kv-input-format.iml" filepath="$PROJECT_DIR$/hadoop/kv-input-format/kv-input-format.iml" />
-      <module fileurl="file://$PROJECT_DIR$/hadoop/nline-input-format/nline-input-format.iml" filepath="$PROJECT_DIR$/hadoop/nline-input-format/nline-input-format.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-rest/spring-rest.iml" filepath="$PROJECT_DIR$/spring-rest/spring-rest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/hadoop/wordcount/wordcount.iml" filepath="$PROJECT_DIR$/hadoop/wordcount/wordcount.iml" />
     </modules>
   </component>
 </project>
