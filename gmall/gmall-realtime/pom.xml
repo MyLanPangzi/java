@@ -18,9 +18,20 @@
         <jna.version>4.5.2</jna.version>
         <commons-compiler.version>2.7.8</commons-compiler.version>
         <scala-maven-plugin.version>3.2.2</scala-maven-plugin.version>
+        <phoenix-spark.version>4.14.2-HBase-1.3</phoenix-spark.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.phoenix</groupId>
+            <artifactId>phoenix-spark</artifactId>
+            <version>${phoenix-spark.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_${scala.version}</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.hiscat</groupId>
             <artifactId>gmall-common</artifactId>
