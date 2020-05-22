@@ -6,17 +6,20 @@ import com.hiscat.gmallweb.entity.StartupLog;
 import com.hiscat.gmallweb.mapper.StartupLogMapper;
 import com.hiscat.gmallweb.service.StartupLogService;
 import com.hiscat.gmallweb.vo.DauTotalVO;
+import com.hiscat.gmallweb.vo.HourDau;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 /**
  * @author hiscat
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class StartupLogServiceImpl extends ServiceImpl<StartupLogMapper, StartupLog> implements StartupLogService {
 
     StartupLogMapper startupLogMapper;
@@ -29,13 +32,50 @@ public class StartupLogServiceImpl extends ServiceImpl<StartupLogMapper, Startup
                         .eq(StartupLog::getLogdate, date)
                         .groupBy(StartupLog::getLogdate)
         );
-        return Collections.singletonList(
+        return Arrays.asList(
                 DauTotalVO
                         .builder()
                         .id("dau")
                         .name("日活")
                         .value(count.longValue())
+                        .build(),
+                DauTotalVO
+                        .builder()
+                        .id("new_mid")
+                        .name("新增设备")
+                        .value(233L)
                         .build()
         );
+    }
+
+    @Override
+    public HourDau hourDau(String id, String date) {
+        if ("dau".equalsIgnoreCase(id)) {
+            return HourDau.builder().build();
+        }
+        Map<String, Object> today = new HashMap<>();
+        this.listMaps(
+                new QueryWrapper<StartupLog>()
+                        .select("loghour", "count(*) cnt")
+                        .eq("logdate", date)
+                        .groupBy("loghour")
+        ).forEach(e -> {
+            today.put(e.get("LOGHOUR").toString(), e.get("CNT"));
+        });
+
+        Map<String, Object> yesterday = new HashMap<>();
+        this.listMaps(
+                new QueryWrapper<StartupLog>()
+                        .select("loghour", "count(*) cnt")
+                        .eq("logdate", LocalDate.parse(date).minusDays(1).toString())
+                        .groupBy("loghour")
+        ).forEach(e -> {
+            yesterday.put(e.get("LOGHOUR").toString(), e.get("CNT"));
+        });
+
+        return HourDau.builder()
+                .today(today)
+                .yesterday(yesterday)
+                .build();
     }
 }
