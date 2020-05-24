@@ -1,4 +1,4 @@
-package com.hiscat.canal;
+package com.hiscat.canal.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.otter.canal.client.CanalConnector;
@@ -30,7 +30,7 @@ public class CanalKafkaClient {
         );
         canalConnector.connect();
         canalConnector.subscribe("gmall.*");
-        canalConnector.rollback();
+//        canalConnector.rollback();
 
         int emptyCount = 0;
         KafkaProducer<String, String> kafkaProducer = getKafkaProducer();

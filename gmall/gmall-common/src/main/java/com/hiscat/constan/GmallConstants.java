@@ -18,4 +18,5 @@ public class GmallConstants {
     public static final String ES_INDEX_SALE_DETAIL = "gmall2020_sale_detail";
     public static final String ES_ALERT_INDEX = "gmall2020_coupon_alert_";
 
+    public static final String ORDER_INFO_TABLE = "order_info";
 }

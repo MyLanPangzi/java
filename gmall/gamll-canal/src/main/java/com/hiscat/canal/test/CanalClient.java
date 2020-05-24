@@ -1,4 +1,4 @@
-package com.hiscat.canal;
+package com.hiscat.canal.test;
 
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
