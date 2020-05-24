@@ -33,6 +33,7 @@ public class CanalKafkaClient {
         canalConnector.rollback();
 
         int emptyCount = 0;
+        KafkaProducer<String, String> kafkaProducer = getKafkaProducer();
         while (emptyCount < Integer.MAX_VALUE) {
             int batchSize = 1000;
             Message message = canalConnector.getWithoutAck(batchSize);
@@ -43,7 +44,6 @@ public class CanalKafkaClient {
                 continue;
             }
             emptyCount = 0;
-            KafkaProducer<String, String> kafkaProducer = getKafkaProducer();
             message.getEntries()
                     .stream()
                     .filter(entry -> entry.getHeader().getTableName().equalsIgnoreCase(ORDER_INTO_TABLE))
@@ -56,7 +56,7 @@ public class CanalKafkaClient {
                     });
         }
 
-
+        kafkaProducer.close();
         canalConnector.unsubscribe();
         canalConnector.disconnect();
     }

@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 public class DauTotalVO {
     private String id;
     private String name;
-    private Long value;
+    private Double value;
 
 }

@@ -14,7 +14,7 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class HourDau {
+public class HourCount {
     private Map<String, Object> yesterday;
     private Map<String, Object> today;
 }

@@ -1,8 +1,8 @@
 package com.hiscat.gmallweb.controller;
 
-import com.hiscat.gmallweb.service.StartupLogService;
+import com.hiscat.gmallweb.service.WebService;
 import com.hiscat.gmallweb.vo.DauTotalVO;
-import com.hiscat.gmallweb.vo.HourDau;
+import com.hiscat.gmallweb.vo.HourCount;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class WebController {
 
-    StartupLogService startupLogService;
+    WebService startupLogService;
 
     @GetMapping("/realtime-total")
     public List<DauTotalVO> total(String date) {
@@ -24,7 +24,7 @@ public class WebController {
     }
 
     @GetMapping("/realtime-hours")
-    public HourDau hourDau(String id, String date) {
+    public HourCount hourDau(String id, String date) {
         return startupLogService.hourDau(id, date);
     }
 

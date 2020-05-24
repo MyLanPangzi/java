@@ -39,3 +39,4 @@ create table gmall2020_order_info
 
 select * from gmall2020_order_info;
 select count(*) from gmall2020_order_info;
+select sum(total_amount) from gmall2020_order_info where create_date='2020-05-23';

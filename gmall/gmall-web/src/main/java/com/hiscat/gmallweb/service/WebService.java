@@ -1,16 +1,14 @@
 package com.hiscat.gmallweb.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.hiscat.gmallweb.entity.StartupLog;
 import com.hiscat.gmallweb.vo.DauTotalVO;
-import com.hiscat.gmallweb.vo.HourDau;
+import com.hiscat.gmallweb.vo.HourCount;
 
 import java.util.List;
 
 /**
  * @author hiscat
  */
-public interface StartupLogService extends IService<StartupLog> {
+public interface WebService   {
 
     /**
      * 统计当日日活
@@ -27,5 +25,5 @@ public interface StartupLogService extends IService<StartupLog> {
      * @param date 日期
      * @return 分时日活
      */
-    HourDau hourDau(String id, String date);
+    HourCount hourDau(String id, String date);
 }

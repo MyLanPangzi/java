@@ -22,6 +22,7 @@
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>org.apache.phoenix</groupId>
             <artifactId>phoenix-spark</artifactId>
