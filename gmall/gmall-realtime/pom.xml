@@ -19,10 +19,15 @@
         <commons-compiler.version>2.7.8</commons-compiler.version>
         <scala-maven-plugin.version>3.2.2</scala-maven-plugin.version>
         <phoenix-spark.version>4.14.2-HBase-1.3</phoenix-spark.version>
+        <json4s-native_2.11.version>3.5.4</json4s-native_2.11.version>
     </properties>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.json4s</groupId>
+            <artifactId>json4s-native_2.11</artifactId>
+            <version>${json4s-native_2.11.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.phoenix</groupId>
             <artifactId>phoenix-spark</artifactId>

@@ -46,6 +46,7 @@ public abstract class AbstractKafkaProcessor {
      */
     public abstract String topic();
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     public void setKafkaTemplate(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
@@ -63,6 +64,11 @@ public abstract class AbstractKafkaProcessor {
                 .forEach(data -> {
                     LOGGER.info("write Kafka table:{},event types:{},topic:{},data:{}",
                             this.tableName(), eventTypes(), this.topic(), data);
+//                    try {
+//                        TimeUnit.SECONDS.sleep(new Random().nextInt(3));
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
                     kafkaTemplate.send(this.topic(), data);
                 });
     }
