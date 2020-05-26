@@ -1,0 +1,4 @@
+spring:
+  elasticsearch:
+    rest:
+      uris: hadoop102:9200,hadoop103:9200,hadoop104:9200

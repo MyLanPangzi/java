@@ -1,5 +1,6 @@
 package com.hiscat.gmallweb.controller;
 
+import com.hiscat.gmallweb.bean.SaleDetail;
 import com.hiscat.gmallweb.service.WebService;
 import com.hiscat.gmallweb.vo.DauTotalVO;
 import com.hiscat.gmallweb.vo.HourCount;
@@ -16,16 +17,20 @@ import java.util.List;
 @AllArgsConstructor
 public class WebController {
 
-    WebService startupLogService;
+    WebService webService;
 
     @GetMapping("/realtime-total")
     public List<DauTotalVO> total(String date) {
-        return startupLogService.getTotalDau(date);
+        return webService.getTotalDau(date);
     }
 
     @GetMapping("/realtime-hours")
     public HourCount hourDau(String id, String date) {
-        return startupLogService.hourDau(id, date);
+        return webService.hourDau(id, date);
     }
 
+    @GetMapping("/sale_detail")
+    public SaleDetail saleDetail(SaleDetailQuery query) {
+        return this.webService.saleDetail(query);
+    }
 }

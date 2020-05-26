@@ -1,0 +1,2 @@
+### Send POST request with body as parameters
+GET http://localhost:8070/sale_detail?date=2020-05-25&startpage=1&size=2&keyword=小米

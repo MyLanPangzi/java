@@ -16,7 +16,7 @@ object RedisUtil {
       val port: String = config.getProperty("redis.port")
 
       val jedisPoolConfig = new JedisPoolConfig()
-      jedisPoolConfig.setMaxTotal(100) //最大连接数
+      jedisPoolConfig.setMaxTotal(10) //最大连接数
       jedisPoolConfig.setMaxIdle(20) //最大空闲
       jedisPoolConfig.setMinIdle(20) //最小空闲
       jedisPoolConfig.setBlockWhenExhausted(true) //忙碌时是否等待

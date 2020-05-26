@@ -4,8 +4,6 @@ kafka-topics.sh --delete --zookeeper localhost:2181 --topic GMALL_ORDER_DETAIL
 kafka-topics.sh --delete --zookeeper localhost:2181 --topic GMALL_ORDER_INFO
 kafka-topics.sh --delete --zookeeper localhost:2181 --topic GMALL_USER_INFO
 
-
-
 kafka-topics.sh --delete --zookeeper localhost:2181 --topic test
 kafka-topics.sh --delete --zookeeper localhost:2181 --topic topic_event
 kafka-topics.sh --delete --zookeeper localhost:2181 --topic topic_start

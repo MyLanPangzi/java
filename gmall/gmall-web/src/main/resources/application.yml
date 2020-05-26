@@ -1,9 +1,11 @@
 server:
   port: 8070
-
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
 spring:
   datasource:
     driver-class-name: org.apache.phoenix.jdbc.PhoenixDriver
     url: jdbc:phoenix:hadoop102,hadoop103,hadoop104:2181
+  elasticsearch:
+    rest:
+      uris: hadoop102:9200,hadoop103:9200,hadoop104:9200
