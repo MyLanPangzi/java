@@ -1,0 +1,7 @@
+version: '3.7'
+services:
+  nifi:
+    image: apache/nifi
+    ports:
+      - 8080:8080
+    restart: always
