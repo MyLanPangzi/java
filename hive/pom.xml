@@ -10,6 +10,7 @@
         <module>udf</module>
         <module>jdbc</module>
         <module>guli-etl</module>
+        <module>hive-udaf</module>
     </modules>
 
     <packaging>pom</packaging>

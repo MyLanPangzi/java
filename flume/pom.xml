@@ -8,6 +8,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <modules>
         <module>custom-components</module>
+        <module>etl-interceptor</module>
     </modules>
 
     <packaging>pom</packaging>
