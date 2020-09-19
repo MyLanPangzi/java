@@ -1,3 +1,4 @@
+use gmall;
 drop table if exists dwd_start_log;
 CREATE EXTERNAL TABLE dwd_start_log
 (
@@ -29,33 +30,6 @@ CREATE EXTERNAL TABLE dwd_start_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_start_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-insert overwrite table dwd_start_log
-    PARTITION (dt = '2020-03-10')
-select get_json_object(line, '$.mid')          mid_id,
-       get_json_object(line, '$.uid')          user_id,
-       get_json_object(line, '$.vc')           version_code,
-       get_json_object(line, '$.vn')           version_name,
-       get_json_object(line, '$.l')            lang,
-       get_json_object(line, '$.sr')           source,
-       get_json_object(line, '$.os')           os,
-       get_json_object(line, '$.ar')           area,
-       get_json_object(line, '$.md')           model,
-       get_json_object(line, '$.ba')           brand,
-       get_json_object(line, '$.sv')           sdk_version,
-       get_json_object(line, '$.g')            gmail,
-       get_json_object(line, '$.hw')           height_width,
-       get_json_object(line, '$.t')            app_time,
-       get_json_object(line, '$.nw')           network,
-       get_json_object(line, '$.ln')           lng,
-       get_json_object(line, '$.la')           lat,
-       get_json_object(line, '$.entry')        entry,
-       get_json_object(line, '$.open_ad_type') open_ad_type,
-       get_json_object(line, '$.action')       action,
-       get_json_object(line, '$.loading_time') loading_time,
-       get_json_object(line, '$.detail')       detail,
-       get_json_object(line, '$.extend1')      extend1
-from ods_start_log
-where dt = '2020-03-10';
 drop table if exists dwd_base_event_log;
 CREATE EXTERNAL TABLE dwd_base_event_log
 (
@@ -84,36 +58,12 @@ CREATE EXTERNAL TABLE dwd_base_event_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_base_event_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-create function base_analizer as 'com.hiscat.hive.BaseFieldUDF'
+/*create function base_analizer as 'com.hiscat.hive.BaseFieldUDF'
     using jar 'hdfs://hadoop102:9000/user/hive/jars/udtf-1.0-SNAPSHOT.jar';
 create function flat_analizer as 'com.hiscat.hive.EventJsonUDTF'
     using jar 'hdfs://hadoop102:9000/user/hive/jars/udtf-1.0-SNAPSHOT.jar';
 drop function base_analizer;
-drop function flat_analizer;
-insert overwrite table dwd_base_event_log partition (dt = '2020-03-11')
-select base_analizer(line, 'mid') as mid_id,
-       base_analizer(line, 'uid') as user_id,
-       base_analizer(line, 'vc')  as version_code,
-       base_analizer(line, 'vn')  as version_name,
-       base_analizer(line, 'l')   as lang,
-       base_analizer(line, 'sr')  as source,
-       base_analizer(line, 'os')  as os,
-       base_analizer(line, 'ar')  as area,
-       base_analizer(line, 'md')  as model,
-       base_analizer(line, 'ba')  as brand,
-       base_analizer(line, 'sv')  as sdk_version,
-       base_analizer(line, 'g')   as gmail,
-       base_analizer(line, 'hw')  as height_width,
-       base_analizer(line, 't')   as app_time,
-       base_analizer(line, 'nw')  as network,
-       base_analizer(line, 'ln')  as lng,
-       base_analizer(line, 'la')  as lat,
-       event_name,
-       event_json,
-       base_analizer(line, 'st')  as server_time
-from ods_event_log lateral view flat_analizer(base_analizer(line, 'et')) tmp_flat as event_name, event_json
-where dt = '2020-03-11'
-  and base_analizer(line, 'et') <> '';
+drop function flat_analizer;*/
 drop table if exists dwd_display_log;
 CREATE EXTERNAL TABLE dwd_display_log
 (
@@ -145,33 +95,6 @@ CREATE EXTERNAL TABLE dwd_display_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_display_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-insert overwrite table dwd_display_log PARTITION (dt = '2020-03-10')
-select mid_id,
-       user_id,
-       version_code,
-       version_name,
-       lang,
-       source,
-       os,
-       area,
-       model,
-       brand,
-       sdk_version,
-       gmail,
-       height_width,
-       app_time,
-       network,
-       lng,
-       lat,
-       get_json_object(event_json, '$.kv.action')   action,
-       get_json_object(event_json, '$.kv.goodsid')  goodsid,
-       get_json_object(event_json, '$.kv.place')    place,
-       get_json_object(event_json, '$.kv.extend1')  extend1,
-       get_json_object(event_json, '$.kv.category') category,
-       server_time
-from dwd_base_event_log
-where dt = '2020-03-10'
-  and event_name = 'display';
 drop table if exists dwd_newsdetail_log;
 CREATE EXTERNAL TABLE dwd_newsdetail_log
 (
@@ -206,36 +129,6 @@ CREATE EXTERNAL TABLE dwd_newsdetail_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_newsdetail_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-insert overwrite table dwd_newsdetail_log PARTITION (dt = '2020-03-10')
-select mid_id,
-       user_id,
-       version_code,
-       version_name,
-       lang,
-       source,
-       os,
-       area,
-       model,
-       brand,
-       sdk_version,
-       gmail,
-       height_width,
-       app_time,
-       network,
-       lng,
-       lat,
-       get_json_object(event_json, '$.kv.entry')         entry,
-       get_json_object(event_json, '$.kv.action')        action,
-       get_json_object(event_json, '$.kv.goodsid')       goodsid,
-       get_json_object(event_json, '$.kv.showtype')      showtype,
-       get_json_object(event_json, '$.kv.news_staytime') news_staytime,
-       get_json_object(event_json, '$.kv.loading_time')  loading_time,
-       get_json_object(event_json, '$.kv.type1')         type1,
-       get_json_object(event_json, '$.kv.category')      category,
-       server_time
-from dwd_base_event_log
-where dt = '2020-03-10'
-  and event_name = 'newsdetail';
 drop table if exists dwd_loading_log;
 CREATE EXTERNAL TABLE dwd_loading_log
 (
@@ -269,35 +162,6 @@ CREATE EXTERNAL TABLE dwd_loading_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_loading_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-insert overwrite table dwd_loading_log PARTITION (dt = '2020-03-10')
-select mid_id,
-       user_id,
-       version_code,
-       version_name,
-       lang,
-       source,
-       os,
-       area,
-       model,
-       brand,
-       sdk_version,
-       gmail,
-       height_width,
-       app_time,
-       network,
-       lng,
-       lat,
-       get_json_object(event_json, '$.kv.action')       action,
-       get_json_object(event_json, '$.kv.loading_time') loading_time,
-       get_json_object(event_json, '$.kv.loading_way')  loading_way,
-       get_json_object(event_json, '$.kv.extend1')      extend1,
-       get_json_object(event_json, '$.kv.extend2')      extend2,
-       get_json_object(event_json, '$.kv.type')         type,
-       get_json_object(event_json, '$.kv.type1')        type1,
-       server_time
-from dwd_base_event_log
-where dt = '2020-03-10'
-  and event_name = 'loading';
 drop table if exists dwd_ad_log;
 CREATE EXTERNAL TABLE dwd_ad_log
 (
@@ -330,34 +194,6 @@ CREATE EXTERNAL TABLE dwd_ad_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_ad_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-insert overwrite table dwd_ad_log PARTITION (dt = '2020-03-10')
-select mid_id,
-       user_id,
-       version_code,
-       version_name,
-       lang,
-       source,
-       os,
-       area,
-       model,
-       brand,
-       sdk_version,
-       gmail,
-       height_width,
-       app_time,
-       network,
-       lng,
-       lat,
-       get_json_object(event_json, '$.kv.entry')        entry,
-       get_json_object(event_json, '$.kv.action')       action,
-       get_json_object(event_json, '$.kv.contentType')  contentType,
-       get_json_object(event_json, '$.kv.displayMills') displayMills,
-       get_json_object(event_json, '$.kv.itemId')       itemId,
-       get_json_object(event_json, '$.kv.activityId')   activityId,
-       server_time
-from dwd_base_event_log
-where dt = '2020-03-10'
-  and event_name = 'ad';
 drop table if exists dwd_notification_log;
 CREATE EXTERNAL TABLE dwd_notification_log
 (
@@ -388,32 +224,6 @@ CREATE EXTERNAL TABLE dwd_notification_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_notification_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-insert overwrite table dwd_notification_log PARTITION (dt = '2020-03-10')
-select mid_id,
-       user_id,
-       version_code,
-       version_name,
-       lang,
-       source,
-       os,
-       area,
-       model,
-       brand,
-       sdk_version,
-       gmail,
-       height_width,
-       app_time,
-       network,
-       lng,
-       lat,
-       get_json_object(event_json, '$.kv.action')    action,
-       get_json_object(event_json, '$.kv.noti_type') noti_type,
-       get_json_object(event_json, '$.kv.ap_time')   ap_time,
-       get_json_object(event_json, '$.kv.content')   content,
-       server_time
-from dwd_base_event_log
-where dt = '2020-03-10'
-  and event_name = 'notification';
 drop table if exists dwd_active_background_log;
 CREATE EXTERNAL TABLE dwd_active_background_log
 (
@@ -441,29 +251,6 @@ CREATE EXTERNAL TABLE dwd_active_background_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_background_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-insert overwrite table dwd_active_background_log PARTITION (dt = '2020-03-10')
-select mid_id,
-       user_id,
-       version_code,
-       version_name,
-       lang,
-       source,
-       os,
-       area,
-       model,
-       brand,
-       sdk_version,
-       gmail,
-       height_width,
-       app_time,
-       network,
-       lng,
-       lat,
-       get_json_object(event_json, '$.kv.active_source') active_source,
-       server_time
-from dwd_base_event_log
-where dt = '2020-03-10'
-  and event_name = 'active_background';
 drop table if exists dwd_comment_log;
 CREATE EXTERNAL TABLE dwd_comment_log
 (
@@ -498,36 +285,6 @@ CREATE EXTERNAL TABLE dwd_comment_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_comment_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-insert overwrite table dwd_comment_log PARTITION (dt = '2020-03-10')
-select mid_id,
-       user_id,
-       version_code,
-       version_name,
-       lang,
-       source,
-       os,
-       area,
-       model,
-       brand,
-       sdk_version,
-       gmail,
-       height_width,
-       app_time,
-       network,
-       lng,
-       lat,
-       get_json_object(event_json, '$.kv.comment_id')   comment_id,
-       get_json_object(event_json, '$.kv.userid')       userid,
-       get_json_object(event_json, '$.kv.p_comment_id') p_comment_id,
-       get_json_object(event_json, '$.kv.content')      content,
-       get_json_object(event_json, '$.kv.addtime')      addtime,
-       get_json_object(event_json, '$.kv.other_id')     other_id,
-       get_json_object(event_json, '$.kv.praise_count') praise_count,
-       get_json_object(event_json, '$.kv.reply_count')  reply_count,
-       server_time
-from dwd_base_event_log
-where dt = '2020-03-10'
-  and event_name = 'comment';
 drop table if exists dwd_favorites_log;
 CREATE EXTERNAL TABLE dwd_favorites_log
 (
@@ -558,32 +315,6 @@ CREATE EXTERNAL TABLE dwd_favorites_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_favorites_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-insert overwrite table dwd_favorites_log PARTITION (dt = '2020-03-10')
-select mid_id,
-       user_id,
-       version_code,
-       version_name,
-       lang,
-       source,
-       os,
-       area,
-       model,
-       brand,
-       sdk_version,
-       gmail,
-       height_width,
-       app_time,
-       network,
-       lng,
-       lat,
-       get_json_object(event_json, '$.kv.id')        id,
-       get_json_object(event_json, '$.kv.course_id') course_id,
-       get_json_object(event_json, '$.kv.userid')    userid,
-       get_json_object(event_json, '$.kv.add_time')  add_time,
-       server_time
-from dwd_base_event_log
-where dt = '2020-03-10'
-  and event_name = 'favorites';
 drop table if exists dwd_praise_log;
 CREATE EXTERNAL TABLE dwd_praise_log
 (
@@ -615,33 +346,6 @@ CREATE EXTERNAL TABLE dwd_praise_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_praise_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-insert overwrite table dwd_praise_log PARTITION (dt = '2020-03-10')
-select mid_id,
-       user_id,
-       version_code,
-       version_name,
-       lang,
-       source,
-       os,
-       area,
-       model,
-       brand,
-       sdk_version,
-       gmail,
-       height_width,
-       app_time,
-       network,
-       lng,
-       lat,
-       get_json_object(event_json, '$.kv.id')        id,
-       get_json_object(event_json, '$.kv.userid')    userid,
-       get_json_object(event_json, '$.kv.target_id') target_id,
-       get_json_object(event_json, '$.kv.type')      type,
-       get_json_object(event_json, '$.kv.add_time')  add_time,
-       server_time
-from dwd_base_event_log
-where dt = '2020-03-10'
-  and event_name = 'praise';
 drop table if exists dwd_error_log;
 CREATE EXTERNAL TABLE dwd_error_log
 (
@@ -670,31 +374,6 @@ CREATE EXTERNAL TABLE dwd_error_log
     stored as parquet
     location '/warehouse/gmall/dwd/dwd_error_log/'
     TBLPROPERTIES ('parquet.compression' = 'lzo');
-insert overwrite table dwd_error_log PARTITION (dt = '2020-03-10')
-select mid_id,
-       user_id,
-       version_code,
-       version_name,
-       lang,
-       source,
-       os,
-       area,
-       model,
-       brand,
-       sdk_version,
-       gmail,
-       height_width,
-       app_time,
-       network,
-       lng,
-       lat,
-       get_json_object(event_json, '$.kv.errorBrief')  errorBrief,
-       get_json_object(event_json, '$.kv.errorDetail') errorDetail,
-       server_time
-from dwd_base_event_log
-where dt = '2020-03-10'
-  and event_name = 'error';
-
 
 DROP TABLE IF EXISTS `dwd_dim_sku_info`;
 CREATE EXTERNAL TABLE `dwd_dim_sku_info`

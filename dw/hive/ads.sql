@@ -1,3 +1,4 @@
+use gmall;
 drop table if exists ads_uv_count;
 create external table ads_uv_count
 (

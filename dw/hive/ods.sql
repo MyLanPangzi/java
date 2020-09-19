@@ -1,3 +1,4 @@
+use gmall;
 drop table if exists ods_start_log;
 CREATE EXTERNAL TABLE ods_start_log
 (
@@ -8,8 +9,6 @@ CREATE EXTERNAL TABLE ods_start_log
         INPUTFORMAT 'com.hadoop.mapred.DeprecatedLzoTextInputFormat'
         OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
     LOCATION '/warehouse/gmall/ods/ods_start_log';
-load data inpath '/origin_data/gmall/log/topic_start/2020-03-10' into table ods_start_log partition (dt = '2020-03-10');
---  hadoop jar /opt/module/hadoop-2.7.2/share/hadoop/common/hadoop-lzo-0.4.20.jar com.hadoop.compression.lzo.DistributedLzoIndexer /warehouse/gmall/ods/ods_start_log/dt=2020-03-10
 drop table if exists ods_event_log;
 CREATE EXTERNAL TABLE ods_event_log
 (
@@ -20,9 +19,6 @@ CREATE EXTERNAL TABLE ods_event_log
         INPUTFORMAT 'com.hadoop.mapred.DeprecatedLzoTextInputFormat'
         OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
     LOCATION '/warehouse/gmall/ods/ods_event_log';
-load data inpath '/origin_data/gmall/log/topic_event/2020-03-10' into table ods_event_log partition (dt = '2020-03-10');
--- !hadoop jar /opt/module/hadoop-2.7.2/share/hadoop/common/hadoop-lzo-0.4.20.jar com.hadoop.compression.lzo.DistributedLzoIndexer /warehouse/gmall/ods/ods_event_log/dt=2020-03-10
-msck REPAIR table ods_event_log;
 select count(*) from ods_event_log;
 drop table if exists ods_order_info;
 create external table ods_order_info
