@@ -12,7 +12,7 @@
     <artifactId>hive-udaf</artifactId>
 
     <properties>
-        <hive-exec.version>2.3.6</hive-exec.version>
+        <hive-exec.version>2.3.4</hive-exec.version>
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.hive/hive-exec -->
