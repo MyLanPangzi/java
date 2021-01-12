@@ -20,8 +20,8 @@
     <properties>
         <wagon-maven-plugin>2.0.0</wagon-maven-plugin>
         <wagon-ssh.version>3.3.4</wagon-ssh.version>
-        <hive-exec.version>2.3.4</hive-exec.version>
-        <hive-jdbc.version>1.2.2</hive-jdbc.version>
+        <hive-exec.version>1.2.2</hive-exec.version>
+        <hive-jdbc.version>2.3.4</hive-jdbc.version>
         <lombok.version>1.18.12</lombok.version>
         <junit.version>5.6.0</junit.version>
         <junit-platform-launcher.version>1.6.0</junit-platform-launcher.version>
