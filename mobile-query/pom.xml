@@ -10,7 +10,7 @@
 
     <properties>
         <okhttp.version>4.8.1</okhttp.version>
-        <fastjson.version>1.2.73</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
     </properties>
     <dependencies>
         <dependency>
