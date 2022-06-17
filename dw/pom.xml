@@ -18,7 +18,7 @@
         <flume.version>1.7.0</flume.version>
         <slf4j.version>1.7.20</slf4j.version>
         <logback.version>1.0.7</logback.version>
-        <fastjson.version>1.2.51</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
         <wagon-maven-plugin>2.0.0</wagon-maven-plugin>
         <wagon-ssh.version>3.3.4</wagon-ssh.version>
